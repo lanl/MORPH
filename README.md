@@ -1,12 +1,12 @@
 ----------
 ##### Note: EIDR number O#4999 - MORPH: Shape-agnostic PDE Foundational Models. This program is Open-Source under the BSD-3 License.
 ----------
-# MORPH: PDE foundational models
+## MORPH: PDE foundational models
 <p align="center">
-  <img src="fm_vit.png" width="700" alt="Architecture of the FM">
+  <img src="fm_vit.png" width="500" alt="Architecture of the FM">
 </p>
 
-## Clone the repository
+### Clone the repository
 To clone the repository, click on top-right 'code' and select 'clone with HTTPS' and copy the code path and paste in the terminal.
 ```
 git clone https://github.com/lanl/MORPH.git
@@ -16,7 +16,7 @@ Go to the directory
 cd MORPH
 ```
 
-## Install the requirements
+### Install the requirements
 - Install dependencies via environment.yml
 ```
 conda env create -f environment.yml
@@ -37,8 +37,8 @@ Output:
 PyTorch version: 2.4.1+cu118
 CUDA available: True
 
-## Run the scripts
-### 1. Pretraining script
+### Run the scripts
+#### 1. Pretraining script
 
 - Check arguments:
 ```
@@ -61,7 +61,7 @@ Output:
 [--num_workers NUM_WORKERS] [--pin_flag] [--persist_flag] [--save_every SAVE_EVERY]
 [--save_batch_ckpt] [--save_batch_freq SAVE_BATCH_FREQ] [--overwrite_weights]
 
-### 2. Finetuning script
+#### 2. Finetuning script
 
 Check arguments:
 ```
@@ -78,7 +78,7 @@ Output:
 [--device_idx DEVICE_IDX] [--patience PATIENCE] [--overwrite_weights]
 [--save_every SAVE_EVERY] [--save_batch_ckpt] [--save_batch_freq SAVE_BATCH_FREQ]
 
-### 3. Inference script
+#### 3. Inference script
 
 Check arguments:
 ```
@@ -91,6 +91,7 @@ usage:
 [--ar_order AR_ORDER] [--rollout_horizon ROLLOUT_HORIZON] [--device_idx DEVICE_IDX]
 [--batch_size BATCH_SIZE] [--test_sample TEST_SAMPLE] [--tf_reg dropout emb_dropout]
 [--heads_xa HEADS_XA] [--max_ar_order MAX_AR_ORDER]
+
 
 
 
