@@ -1,7 +1,7 @@
-# MORPH PDE foundational model
 ----------
 ##### Note: EIDR number O#4999 - MORPH: Shape-agnostic PDE Foundational Models. This program is Open-Source under the BSD-3 License.
 ----------
+# MORPH PDE foundational model
 <p align="center">
   <img src="fm_vit.png" width="700" alt="Architecture of the FM">
 </p>
@@ -93,4 +93,5 @@ usage: infer_MORPH.py [-h]
                       [--batch_size BATCH_SIZE] [--test_sample TEST_SAMPLE] [--tf_reg dropout emb_dropout]
 
                       [--heads_xa HEADS_XA] [--max_ar_order MAX_AR_ORDER]
+
 
