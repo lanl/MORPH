@@ -1,6 +1,6 @@
 # MORPH PDE foundational model
 ----------
-##### Note: EIDR number O#4999 - MORPH PDE Foundational Model. This program is Open-Source under the BSD-3 License.
+##### Note: EIDR number O#4999 - MORPH: Shape-agnostic PDE Foundational Models. This program is Open-Source under the BSD-3 License.
 ----------
 <p align="center">
   <img src="fm_vit.png" width="700" alt="Architecture of the FM">
