@@ -37,7 +37,7 @@ Output:
 PyTorch version: 2.4.1+cu118
 CUDA available: True
 
-## 4. Run the scripts
+## Run the scripts
 ### 1. Pretraining script
 
 - Check arguments:
@@ -91,6 +91,7 @@ usage:
 [--ar_order AR_ORDER] [--rollout_horizon ROLLOUT_HORIZON] [--device_idx DEVICE_IDX]
 [--batch_size BATCH_SIZE] [--test_sample TEST_SAMPLE] [--tf_reg dropout emb_dropout]
 [--heads_xa HEADS_XA] [--max_ar_order MAX_AR_ORDER]
+
 
 
 
