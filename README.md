@@ -6,24 +6,7 @@
   <img src="fm_vit.png" width="700" alt="Architecture of the FM">
 </p>
 
-## 1. Set up SSH Key
-Using Claude and [Gitlab docs](https://docs.gitlab.com/user/ssh/)
-- Generate an SSH Key Pair (Replace the "your.email@example.com" with your email id)
-```
-ssh-keygen -t ed25519 -C "your.email@example.com"
-```
-- Copy your public key
-```
-type %USERPROFILE%\.ssh\id_ed25519.pub
-```
-- Add Your SSH Key to GitLab: Preferences -> SSH Keys -> Add Key -> Paste the copied key in "Key tab"
-- Test your connection
-```
-ssh -T -p 10022 git@lisdi-git.lanl.gov
-```
-(After typing 'yes'. If it prints "Welcome to Gitlab "your-username", you are connected)
-
-## 2. Clone the repository
+## Clone the repository
 To clone the repository, click on top-right 'code' and select 'clone with SSH' and copy the code path and paste in anaconda prompt.
 or, open anaconda prompt and paste
 ```
@@ -109,4 +92,5 @@ usage: infer_MORPH.py [-h]
                       [--test_dataset {MHD,DR,CFD1D,CFD2D-IC,CFD3D,SW,DR1D,CFD2D,CFD3D-TURB,BE1D,GSDR2D,TGC3D}]
                       [--ar_order AR_ORDER] [--rollout_horizon ROLLOUT_HORIZON] [--device_idx DEVICE_IDX]
                       [--batch_size BATCH_SIZE] [--test_sample TEST_SAMPLE] [--tf_reg dropout emb_dropout]
+
                       [--heads_xa HEADS_XA] [--max_ar_order MAX_AR_ORDER]
