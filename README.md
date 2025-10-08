@@ -1,14 +1,8 @@
 # ViT as PDE foundational model
-## 0. About the model
+## About the model
 <p align="center">
   <img src="fm_vit.png" width="700" alt="Architecture of the FM">
 </p>
-
-The foundational model performs
-- Cross attention across fields
-- Convolutions across different vector components
-- Axial attention across 4d space(3d)-time
-
 
 ## 1. Set up SSH Key
 Using Claude and [Gitlab docs](https://docs.gitlab.com/user/ssh/)
@@ -113,4 +107,5 @@ usage: infer_MORPH.py [-h]
                       [--test_dataset {MHD,DR,CFD1D,CFD2D-IC,CFD3D,SW,DR1D,CFD2D,CFD3D-TURB,BE1D,GSDR2D,TGC3D}]
                       [--ar_order AR_ORDER] [--rollout_horizon ROLLOUT_HORIZON] [--device_idx DEVICE_IDX]
                       [--batch_size BATCH_SIZE] [--test_sample TEST_SAMPLE] [--tf_reg dropout emb_dropout]
+
                       [--heads_xa HEADS_XA] [--max_ar_order MAX_AR_ORDER]
