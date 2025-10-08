@@ -1,0 +1,12 @@
+name: pytorch_py38_env
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.8
+  - matplotlib
+  - scikit-learn
+  - tqdm
+  - pip
+  - pip:
+    - h5py
