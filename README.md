@@ -7,17 +7,16 @@
 </p>
 
 ## Clone the repository
-To clone the repository, click on top-right 'code' and select 'clone with SSH' and copy the code path and paste in anaconda prompt.
-or, open anaconda prompt and paste
+To clone the repository, click on top-right 'code' and select 'clone with HTTPS' and copy the code path and paste in the terminal.
 ```
-git clone ssh://git@lisdi-git.lanl.gov:10022/mrautela/pdefoundationalmodel_vit.git
+git clone https://github.com/lanl/MORPH.git
 ```
 Go to the directory
 ```
-cd pdefoundationalmodel_vit
+cd MORPH
 ```
 
-## 3. Install the requirements
+## Install the requirements
 - Install dependencies via environment.yml
 ```
 conda env create -f environment.yml
@@ -94,3 +93,4 @@ usage: infer_MORPH.py [-h]
                       [--batch_size BATCH_SIZE] [--test_sample TEST_SAMPLE] [--tf_reg dropout emb_dropout]
 
                       [--heads_xa HEADS_XA] [--max_ar_order MAX_AR_ORDER]
+
