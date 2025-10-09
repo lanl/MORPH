@@ -4,6 +4,7 @@
 
 <div align="center">
 <h1>MORPH: Shape-agnostic PDE foundational models</h1>
+</div>
 
 <p align="center">
   <img src="fm_vit.png" width="500" alt="Architecture of the FM">
@@ -72,6 +73,7 @@ If you use MORPH in your research, please cite:
   url={https://arxiv.org/abs/2509.21670}
 }
 ```
+
 
 
 
