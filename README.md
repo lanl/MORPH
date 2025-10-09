@@ -71,8 +71,11 @@ If you use MORPH in your research, please cite:
 ```
 
 ----------
-##### Note: EIDR number O#4999 - MORPH: Shape-agnostic PDE Foundational Models. This program is Open-Source under the BSD-3 License.
+<div align="center">
+<h1>Note: EIDR number O#4999 - MORPH: Shape-agnostic PDE Foundational Models. This program is Open-Source under the BSD-3 License.</h1>
+</div>
 ----------
+
 
 
 
