@@ -6,18 +6,6 @@
   <img src="fm_vit.png" width="500" alt="Architecture of the FM">
 </p>
 
-If you use MORPH in your research, please cite:
-```
-@misc{rautela2025morphshapeagnosticpdefoundation,
-  title={{MORPH}: Shape-agnostic {PDE} Foundation Models},
-  author={Mahindra Singh Rautela and Alexander Most and Siddharth Mansingh and Bradley C. Love and Ayan Biswas and Diane Oyen and Earl Lawrence},
-  year={2025},
-  eprint={2509.21670},
-  archivePrefix={arXiv},
-  primaryClass={cs.CV},
-  url={https://arxiv.org/abs/2509.21670}
-}
-```
 ### Clone the repository
 To clone the repository, click on top-right 'code' and select 'clone with HTTPS' and copy the code path and paste in the terminal.
 ```
@@ -103,6 +91,20 @@ usage:
 [--ar_order AR_ORDER] [--rollout_horizon ROLLOUT_HORIZON] [--device_idx DEVICE_IDX]
 [--batch_size BATCH_SIZE] [--test_sample TEST_SAMPLE] [--tf_reg dropout emb_dropout]
 [--heads_xa HEADS_XA] [--max_ar_order MAX_AR_ORDER]
+
+If you use MORPH in your research, please cite:
+```
+@misc{rautela2025morphshapeagnosticpdefoundation,
+  title={{MORPH}: Shape-agnostic {PDE} Foundation Models},
+  author={Mahindra Singh Rautela and Alexander Most and Siddharth Mansingh and Bradley C. Love and Ayan Biswas and Diane Oyen and Earl Lawrence},
+  year={2025},
+  eprint={2509.21670},
+  archivePrefix={arXiv},
+  primaryClass={cs.CV},
+  url={https://arxiv.org/abs/2509.21670}
+}
+```
+
 
 
 
