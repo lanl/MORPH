@@ -7,7 +7,7 @@
 </div>
 
 <p align="center">
-  <img src="fm_vit.png" width="700" alt="Architecture of the FM">
+  <img src="fm_vit.png" width="750" alt="Architecture of the FM">
 </p>
 
 ### Clone the repository
@@ -73,6 +73,7 @@ If you use MORPH in your research, please cite:
   url={https://arxiv.org/abs/2509.21670}
 }
 ```
+
 
 
 
