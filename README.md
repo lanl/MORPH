@@ -5,11 +5,6 @@
 <div align="center">
 <h1>MORPH: Shape-agnostic PDE foundational models</h1>
 
-<a href='[https://arxiv.org/pdf/2405.17401](https://arxiv.org/abs/2509.21670)'><img src='https://img.shields.io/badge/ArXiv-Preprint-red'></a>
-[![Hugging Face](https://huggingface.co/mahindrautela/MORPH)
-[![GitHub](https://github.com/lanl/MORPH)
-</div>
-
 <p align="center">
   <img src="fm_vit.png" width="500" alt="Architecture of the FM">
 </p>
