@@ -6,8 +6,8 @@
 <h1>MORPH: Shape-agnostic PDE foundational models</h1>
 
 <a href='[https://arxiv.org/pdf/2405.17401](https://arxiv.org/abs/2509.21670)'><img src='https://img.shields.io/badge/ArXiv-Preprint-red'></a>
-[![Hugging Face](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Demo-red)](https://huggingface.co/mahindrautela/MORPH)
-[![GitHub](https://img.shields.io/github/stars/google/RB-Modulation?style=social)](https://github.com/lanl/MORPH)
+[![Hugging Face](https://huggingface.co/mahindrautela/MORPH)
+[![GitHub](https://github.com/lanl/MORPH)
 </div>
 
 <p align="center">
@@ -77,6 +77,7 @@ If you use MORPH in your research, please cite:
   url={https://arxiv.org/abs/2509.21670}
 }
 ```
+
 
 
 
