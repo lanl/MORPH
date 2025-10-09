@@ -1,7 +1,7 @@
 <div align="center">
 <h1>MORPH: Shape-agnostic PDE foundational models</h1>
 <a href='https://arxiv.org/abs/2509.21670'><img src='https://img.shields.io/badge/ArXiv-Preprint-red'></a>
-[![Hugging Face](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Model-b)](https://huggingface.co/mahindrautela/MORPH)
+<a href='https://huggingface.co/mahindrautela/MORPH'><img src='https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Model-blue'></a>
 </div>
 
 
@@ -76,6 +76,7 @@ If you use MORPH in your research, please cite:
 ----------
 #### Note: EIDR number O#4999 - MORPH: Shape-agnostic PDE Foundational Models. This program is Open-Source under the BSD-3 License.
 ----------
+
 
 
 
