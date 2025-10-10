@@ -58,7 +58,7 @@ python scripts/finetune_MORPH.py -h
 
 #### 3. Inference script
 
-Check arguments:
+- Check arguments:
 ```
 python scripts/infer_MORPH.py -h
 ```
@@ -79,6 +79,7 @@ If you use MORPH in your research, please cite:
 ----------
 #### Note: EIDR number O#4999 - MORPH: Shape-agnostic PDE Foundational Models. This program is Open-Source under the BSD-3 License.
 ----------
+
 
 
 
