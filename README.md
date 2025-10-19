@@ -11,12 +11,12 @@
 
 ### Pretraining sets
 <p align="center">
-  <img src="pt.png" width="850" alt="Pretraining sets">
+  <img src="pt.png" width="650" alt="Pretraining sets">
 </p>
 
 ### Finetuning sets
 <p align="center">
-  <img src="ft.png" width="850" alt="Finetuning sets">
+  <img src="ft.png" width="650" alt="Finetuning sets">
 </p>
 
 ### User Guide
@@ -92,6 +92,7 @@ If you use MORPH in your research, please cite:
 ----------
 #### Note: EIDR number O#4999 - MORPH: Shape-agnostic PDE Foundational Models. This program is Open-Source under the BSD-3 License.
 ----------
+
 
 
 
