@@ -9,6 +9,13 @@
   <img src="fm_vit.png" width="850" alt="Architecture of the FM">
 </p>
 
+### Pretraining sets
+<p align="center">
+  <img src="pt.png" width="850" alt="Architecture of the FM">
+</p>
+
+### Finetuning sets
+
 ### User Guide
 The guide for using MORPH as a standalone surrogate and a foundation model is available in ./docs.
 
@@ -82,6 +89,7 @@ If you use MORPH in your research, please cite:
 ----------
 #### Note: EIDR number O#4999 - MORPH: Shape-agnostic PDE Foundational Models. This program is Open-Source under the BSD-3 License.
 ----------
+
 
 
 
