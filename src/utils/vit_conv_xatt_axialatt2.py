@@ -100,11 +100,11 @@ class ViT3DRegression(nn.Module):
         #assert C == self.components, "expected C equal to your model’s components"
         
         # 1) patch-embed → (B, t, n, dim)
-        x = self.patch_embedding(vol)
+        enc = self.patch_embedding(vol)
         #print(f"[ViT] patch embedding: {x.shape}")
 
         # 2) add time-slice pos-emb
-        x = x + self.pos_encoding(x)  # (1, t, n, dim)
+        x = x + self.pos_encoding(enc)  # (1, t, n, dim)
         #print(f"[ViT] after pos embedding: {x.shape}")
         x = self.dropout(x)
 
@@ -115,8 +115,9 @@ class ViT3DRegression(nn.Module):
         patch_vol = pD * pH * pW
         for blk in self.transformer_blocks:
             x = blk(x, grid_size)
+        z = x
         # print(f"[ViT] after transformer: {x.shape}")
-
+        
         # 4) decode → (B, t, n, out_ch*patch³)
         x = self.decoder(x, F, C, patch_vol)
         # print(f"[ViT] after decoder: {x.shape}")
@@ -142,4 +143,4 @@ class ViT3DRegression(nn.Module):
         x_last = x_last.view(b, F, C, D, H, W)
         
         # print(f"[ViT] Final shape: {x_last.shape}")
-        return x_last
+        return enc, z, x_last

@@ -201,7 +201,7 @@ out_all, tar_all = [],[]
 with torch.no_grad():
     for inp, tar in tqdm(test_loader):
         inp = inp.to(device)
-        out = model(inp)
+        _, _, out = model(inp)
         out_all.append(out.detach().cpu())
         tar_all.append(tar)
 out_all = torch.concat(out_all, dim = 0)

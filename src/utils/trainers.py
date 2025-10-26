@@ -27,7 +27,7 @@ class Trainer:
     
             # Zero grads once per iteration (before forward)
             optimizer.zero_grad()
-            outputs = model(images)
+            _, _, outputs = model(images)
             loss = criterion(outputs, targets)
             loss.backward()
             optimizer.step()
@@ -87,7 +87,7 @@ class Trainer:
         for i, (images, targets) in enumerate(train_loader):
             images = images.to(device, non_blocking = True)
             targets = targets.to(device, non_blocking = True)
-            outputs = model(images)
+            _, _, outputs = model(images)
             
             # scale the loss so its gradient is equivalent to a batch of size=accum_steps
             loss = criterion(outputs, targets) / accum_steps  
@@ -129,60 +129,6 @@ class Trainer:
             optimizer.step()
             optimizer.zero_grad()
             
-        return running_loss / n_batches
-        
-    @staticmethod
-    def train_singlestep_cycle(model, train_loader, criterion, optimizer, device):
-        model.train()
-        running_loss, window_loss = 0.0, 0.0
-        window_size = 1000
-        n_batches   = 0
-        start_time  = time.time()
-        for i, (images, targets) in enumerate(train_loader):
-            images = images.to(device, non_blocking = True)
-            targets = targets.to(device, non_blocking = True)
-    
-            optimizer.zero_grad()
-            # Forward prediction: t -> t+1
-            predictions_forward = model(images)
-            loss_forward = criterion(predictions_forward, targets)
-    
-            # Backward prediction: t+1 -> t (reverse input-target pair along time dim)
-            reversed_inputs  = targets.unsqueeze(1)  # reverse targets along time
-            reversed_targets = images[:, -1]         # reverse inputs along time
-            predictions_backward = model(reversed_inputs)
-            loss_backward = criterion(predictions_backward, reversed_targets[:, -1])
-    
-            # Combined loss
-            loss = (loss_forward + loss_backward) / 2
-            loss.backward()
-            optimizer.step()
-            
-            # collect the losses
-            n_batches   += 1
-            window_loss += loss.item()
-            running_loss += loss.item()
-            
-            # print only few batch
-            if is_main_process():
-                if n_batches < 40:
-                    print(f'[Batch no. {n_batches}, Images(N,T,F,C,D,H,W):' 
-                          f'{images.shape}, Targets(N,F,C,D,H,W): {targets.shape}'
-                          f' Batch loss: {loss.item():.5f}')
-            
-                if torch.isnan(loss) or torch.isinf(loss):
-                    raise RuntimeError("NaN/Inf in loss")
-            
-                if n_batches % window_size == 0:
-                    elapsed = (time.time() - start_time) / 60
-                    avg_all = running_loss / n_batches
-                    avg_win = window_loss  / window_size
-                    window_loss = 0.0
-        
-                    print(f"Time={elapsed:.2f} min, Batches={n_batches} | "
-                          f"Overall Avg Loss={avg_all:.5f} | "
-                         f"Window Avg Loss={avg_win:.5f}")
-                    
         return running_loss / n_batches
     
     @staticmethod
@@ -255,7 +201,7 @@ class Trainer:
             for images, targets in val_loader:
                 images = images.to(device, non_blocking = True)
                 targets = targets.to(device, non_blocking = True)
-                outputs = model(images)
+                _, _, outputs = model(images)
                 running_loss += criterion(outputs, targets).item()
                 n_batches   += 1
                 
