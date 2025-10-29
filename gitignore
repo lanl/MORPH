@@ -4,6 +4,9 @@ datasets/
 # ---Ignore results---
 experiments/results/
 
+# ---Ignore specific results---
+experiments/heat/
+
 # ---Ignore models---
 models/
 
