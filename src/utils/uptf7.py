@@ -1,11 +1,10 @@
-import torch
-import numpy as np
 import argparse
 from pathlib import Path
+import numpy as np
 
-class UPTF7():
+class UPTF7:
     def __init__(self, 
-                 dataset: torch.Tensor | np.ndarray,
+                 dataset,            # NumPy array
                  num_samples: int = None, 
                  traj_len: int = None, 
                  fields: int = None, 
@@ -13,7 +12,6 @@ class UPTF7():
                  image_depth: int = None, 
                  image_height: int = None, 
                  image_width: int = None):
-        
         self.dataset = dataset
         self.num_samples = num_samples
         self.traj_len = traj_len
@@ -24,22 +22,18 @@ class UPTF7():
         self.image_width = image_width
 
     def transform(self):
-        # need tensor dataset (float32)
-        if not isinstance(self.dataset, torch.Tensor):
-            dataset_tensor = torch.from_numpy(self.dataset).to(dtype=torch.float32)
-        else:
-            dataset_tensor = self.dataset
+        # ensure float32 NumPy array
+        x = np.asarray(self.dataset, dtype=np.float32)
 
-        # need atleast 3D tensor and max 7D tensor
-        if dataset_tensor.ndims < 3:
-            raise ValueError(f"Expected at least (N, T, ...), but got shape {tuple(dataset_tensor.shape)}")
-        
-        if dataset_tensor.ndims > 7:
-            raise ValueError(f"Expected at most 7D tensor, but got shape {tuple(dataset_tensor.shape)}")
+        # need at least 3D and at most 7D
+        if x.ndim < 3:
+            raise ValueError(f"Expected at least (N, T, ...), but got shape {tuple(x.shape)}")
+        if x.ndim > 7:
+            raise ValueError(f"Expected at most 7D tensor, but got shape {tuple(x.shape)}")
 
         # set default values if None
-        N = self.num_samples if self.num_samples is not None else dataset_tensor.shape[0]
-        T = self.traj_len if self.traj_len is not None else dataset_tensor.shape[1]
+        N = self.num_samples if self.num_samples is not None else x.shape[0]
+        T = self.traj_len if self.traj_len is not None else x.shape[1]
         F = self.fields if self.fields is not None else 1
         C = self.components if self.components is not None else 1
         D = self.image_depth if self.image_depth is not None else 1
@@ -49,52 +43,42 @@ class UPTF7():
         # morph-v1 restrictions
         if F > 3 or C > 3:
             raise ValueError(f"MORPH-v1 only supports up to 3 fields and 3 components. Got F={F}, C={C}")
-        
         if D * H * W > 128 * 128 * 128:
             raise ValueError(f"MORPH-v1 only supports up to 128x128x128 images (max tokens 4096). Got D*H*W={D*H*W}")
-        
-        # Apply UPTF7 transformation
-        dataset_uptf7 = dataset_tensor.contiguous().view(N, T, F, C, D, H, W)
 
-        return dataset_uptf7
-    
-    def main():
-        # load dataset
-        parser = argparse.ArgumentParser(description="UPTF7 Transformation")
-        parser.add_argument('--dataset_path', type=str, required=True, help='Path to the dataset (numpy file)')
-        parser.add_argument('--num_samples', type=int, default=None, help='Number of samples (N)')
-        parser.add_argument('--traj_len', type=int, default=None, help='Trajectory length (T)')
-        parser.add_argument('--fields', type=int, default=None, help='Number of fields (F)')
-        parser.add_argument('--components', type=int, default=None, help='Number of components (C)')
-        parser.add_argument('--image_depth', type=int, default=None, help='Image depth (D)')
-        parser.add_argument('--image_height', type=int, default=None, help='Image height (H)')
-        parser.add_argument('--image_width', type=int, default=None, help='Image width (W)')
-        args = parser.parse_args()
+        # reshape to (N, T, F, C, D, H, W)
+        return x.reshape(N, T, F, C, D, H, W)
 
-        # Load dataset
-        ext = Path(args.dataset_path).suffix.lower()
-        if ext == ".npy":
-            dataset = np.load(args.dataset_path)  # -> np.ndarray
-        elif ext == ".pt" or ext == ".pth":
-            dataset = torch.load(args.dataset_path)  # -> torch.Tensor
+def main():
+    parser = argparse.ArgumentParser(description="UPTF7 Transformation (NumPy-only)")
+    parser.add_argument('--dataset_path', type=str, required=True, help='Path to the dataset (.npy)')
+    parser.add_argument('--num_samples', type=int, default=None, help='N')
+    parser.add_argument('--traj_len', type=int, default=None, help='T')
+    parser.add_argument('--fields', type=int, default=None, help='F')
+    parser.add_argument('--components', type=int, default=None, help='C')
+    parser.add_argument('--image_depth', type=int, default=None, help='D')
+    parser.add_argument('--image_height', type=int, default=None, help='H')
+    parser.add_argument('--image_width', type=int, default=None, help='W')
+    args = parser.parse_args()
 
-        # Create UPTF7 instance
-        uptf7 = UPTF7(
-            dataset=dataset,
-            num_samples=args.num_samples,
-            traj_len=args.traj_len,
-            fields=args.fields,
-            components=args.components,
-            image_depth=args.image_depth,
-            image_height=args.image_height,
-            image_width=args.image_width
-        )
+    # Load dataset (.npy only)
+    if Path(args.dataset_path).suffix.lower() != ".npy":
+        raise ValueError("Only .npy files are supported in the NumPy-only version.")
+    dataset = np.load(args.dataset_path)
 
-        # Transform dataset
-        dataset_uptf7 = uptf7.transform()
+    # Transform and save
+    uptf7 = UPTF7(
+        dataset=dataset,
+        num_samples=args.num_samples,
+        traj_len=args.traj_len,
+        fields=args.fields,
+        components=args.components,
+        image_depth=args.image_depth,
+        image_height=args.image_height,
+        image_width=args.image_width
+    )
+    dataset_uptf7 = uptf7.transform()
+    np.save("dataset_uptf7.npy", dataset_uptf7)
 
-        # Save transformed dataset
-        np.save("dataset_uptf7.npy", dataset_uptf7)
-
-    if __name__ == "__main__":
-        main()
+if __name__ == "__main__":
+    main()

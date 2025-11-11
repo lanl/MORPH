@@ -1,3 +1,4 @@
+from json import load
 import os
 import sys
 import argparse
@@ -30,6 +31,7 @@ from config.data_config import DataConfig
 from src.utils.normalization import RevIN
 from src.utils.uptf7 import UPTF7
 from pathlib import Path
+from sklearn.model_selection import train_test_split
 
 #%% Argument parser
 MORPH_MODELS = {
@@ -49,8 +51,11 @@ parser.add_argument('--dataset', type=str, help="Path to saved .npy/.pth", requi
 parser.add_argument('--dataset_name', type=str, help="Name of the dataset", default=None)
 parser.add_argument('--dataset_specs', nargs=5, type=int, metavar=('F','C','D','H','W'),
                     default=[2,1,1,128,128], help="Dataset specs")
+parser.add_argument('--model_choice', type=str, default = 'FM', help = "Model to finetune")
 parser.add_argument('--model_size', type=str, choices = list(MORPH_MODELS.keys()),
                     default='Ti', help='choose from Ti, S, M, L')
+parser.add_argument('--ckpt_from', type=str, choices = ['FM','FT'], default = 'FM',
+                    help="Checkpoint information from FM or previous FT", required = True)
 parser.add_argument('--checkpoint', type=str, help="Path to saved .pth state dict", required=True)
 
 # --- Finetune levels ---                     
@@ -80,7 +85,6 @@ parser.add_argument('--n_epochs', type=int, default = 150, help="Fine-tuning epo
 parser.add_argument('--n_traj', type=int, help="Fine-tuning trajectories")
 parser.add_argument('--rollout_horizon', type = int, default = 10, 
                     help = "Visualization: single step & rollouts")
-parser.add_argument('--batch_size', type=int, help="Batch size for loaders")
 
 # -- model default hyperparameters ---
 parser.add_argument('--tf_reg', nargs=2, type=float, metavar=('dropout','emb_dropout'),
@@ -93,9 +97,10 @@ parser.add_argument('--device_idx', type=int, default=0, help="CUDA device index
 parser.add_argument('--patience', type=int, default=10, help="Early stopping criteria")
 
 # --- optimizer hyperparameters ---
-parser.add_argument('--batch_size', type=int, default=8, help="Batch size for training")
+parser.add_argument('--batch_size', type=int, default=8, help="Batch size for finetuning")
 parser.add_argument('--lr', type=float, default=1e-4, help="Learning rate")
 parser.add_argument('--weight_decay', type=float, default=0.0, help="Weight decay")
+parser.add_argument('--lr_scheduler', action='store_true', help="Use LR scheduler")
 
 # --- save related ---
 parser.add_argument('--overwrite_weights', action='store_true', 
@@ -118,16 +123,20 @@ savepath_model = os.path.join(project_root, "models")
 os.makedirs(savepath_model, exist_ok=True)
 loadpath_muvar = os.path.join(project_root, 'data')
 os.makedirs(loadpath_muvar, exist_ok=True)
+loadpath_datasets = os.path.join(project_root, 'datasets')
+os.makedirs(loadpath_datasets, exist_ok=True)
 
 # +++ Load dataset ++++
-ext = Path(args.ft_dataset).suffix.lower()
+print(f'→ Loading dataset ...')
+ext = Path(args.dataset).suffix.lower()
+print(f'→ Dataset format: {ext}')
+
 if ext == ".npy":
-    print(f'→ Loading .npy dataset from {args.ft_dataset}')
-    dataset = np.load(args.ft_dataset)     # -> np.ndarray
-elif ext == ".pt" or ext == ".pth":
-    print(f'→ Loading .pt/.pth dataset from {args.ft_dataset}')
-    dataset = torch.load(args.ft_dataset)  # -> torch.Tensor
-print(f'→ Finetuning dataset shape: {dataset.shape}')
+    print(f'→ Loading .npy dataset from {args.dataset}')
+    dataset = np.load(os.path.join(loadpath_datasets, args.dataset))     # -> np.ndarray
+    print("Original dataset shape", dataset.shape)
+else:
+    raise ValueError("Unsupported dataset format. Need a .npy file.")
 
 # number of samples and trajectory length
 num_samples = dataset.shape[0]
@@ -135,7 +144,7 @@ traj_len = dataset.shape[1]
 
 # +++ convert to UTPF7 format (N,T,F,C,D,H,W) +++
 dataset_uptf7 = UPTF7(
-    dataset=dataset,
+    dataset=dataset, # numpy array
     num_samples=num_samples,
     traj_len=traj_len,
     fields=args.dataset_specs[0],
@@ -144,6 +153,7 @@ dataset_uptf7 = UPTF7(
     image_height=args.dataset_specs[3],
     image_width=args.dataset_specs[4]
 ).transform()
+print("UPTF7 dataset shape", dataset_uptf7.shape)
 
 # +++ REVIN normalization +++
 dataset_name = 'name' if args.dataset_name is None else args.dataset_name
@@ -151,8 +161,8 @@ revin = RevIN(loadpath_muvar)
 norm_prefix = f'norm_{dataset_name}'
 
 # normalize data
-revin.compute_stats(dataset, prefix = norm_prefix) 
-dataset_norm = revin.normalize(dataset, prefix = norm_prefix)
+revin.compute_stats(dataset_uptf7, prefix = norm_prefix) 
+dataset_norm = revin.normalize(dataset_uptf7, prefix = norm_prefix)
 print("Normalize dataset shape", dataset_norm.shape)
 
 # Check round‐trip via denormalize
@@ -160,8 +170,7 @@ recovered = revin.denormalize(dataset_norm, prefix=norm_prefix)
 tol_6 = 1e-2
 max_error = 0.0
 for i in range(recovered.shape[0]):
-    print(f'Current sample: {i}, Current max_error:{max_error:.7f}')
-    maxerror_i = np.max(np.abs(recovered[i] - dataset[i]))  # saving some memory
+    maxerror_i = np.max(np.abs(recovered[i] - dataset_uptf7[i]))  # saving some memory
     max_error = max(maxerror_i, max_error)
 assert max_error < tol_6, "Denormalization did not perfectly recover original!"
 print("CFD3D RevIN round-trip OK")
@@ -196,35 +205,25 @@ class DatasetforDataloader(Dataset):
     
 # +++ Load data via dataloaders +++
 print("→ Data splitting...")
-train_data, val_data, test_data = train_test_split(dataset_uptf7, [0.8, 0.1, 0.1], generator=torch.Generator().manual_seed(42))
-print(f'→ Train shape: {train_data.shape}, Val shape: {val_data.shape}, Test shape: {test_data.shape}')
+dataset_norm_rs = dataset_norm.transpose(0,1,4,5,6,3,2)    # already in (N,T,D,H,W,F,C)
+train_data, tmp = train_test_split(dataset_norm_rs, test_size=0.2, random_state=42, shuffle=True)
+val_data, test_data = train_test_split(tmp, test_size=0.5, random_state=42, shuffle=True)
 
 # +++ select trajectories +++
-n_traj = args.n_traj if args.n_traj is not None else train_data.shape[0]
+n_traj = train_data.shape[0] if args.n_traj is None else args.n_traj
 print(f'→ [{dataset_name}] Number of finetuning trajectories: {n_traj}')
 
 # +++ Prepare data into (X,y) +++
 print(f'→ [{dataset_name}] Dataset preparation...')
 preparer = FastARDataPreparer(ar_order = args.ar_order)
-
-X_tr, y_tr = preparer.prepare(train_data[0:n_traj])             # also converts (N,T,D,H,W,C,F) -> (N,T,F,C,D,H,W)
-X_va, y_va = preparer.prepare(val_data[0: int(n_traj * 0.125)]) # val data is 12.5% of train data
-X_te, y_te = preparer.prepare(test_data)                        # also converts (N,T,D,H,W,C,F) -> (N,T,F,C,D,H,W)
+X_tr, y_tr = preparer.prepare(train_data[0:n_traj])  # also converts (N,T,D,H,W,C,F) -> (N,T,F,C,D,H,W)
+X_va, y_va = preparer.prepare(val_data) 
+X_te, y_te = preparer.prepare(test_data)             
 print(f'→ Training Inputs: {X_tr.shape} and Targets: {y_tr.shape}')
 assert X_tr.shape[0] == n_traj * (train_data.shape[1] - 1), "Shape mismatch !!"
 
 # free some memory
 del train_data, val_data
-
-# +++ Create dataloaders +++
-ft_tr = DatasetforDataloader(X_tr, y_tr)
-ft_va = DatasetforDataloader(X_va, y_va)
-ft_te = DatasetforDataloader(X_te, y_te)
-
-ft_tr_loader = DataLoader(ft_tr, batch_size=args.batch_size, shuffle=True)
-ft_va_loader = DataLoader(ft_va, batch_size=args.batch_size, shuffle=False)
-ft_te_loader = DataLoader(ft_te, batch_size=args.batch_size, shuffle=False)
-print(f'→ Length dataloader: Tr {len(ft_tr_loader)}, Val {len(ft_va_loader)}')
 
 #%% Define model architecture
 patch_size  = 8
@@ -252,15 +251,25 @@ ft_model = ViT3DRegression(
 num_params_model = sum(p.numel() for p in ft_model.parameters()) / 1e6
 print(f"→ NUMBER OF PARAMETERS OF THE MODEL (in M): {num_params_model:.3g}")
 
-#%% Parallelization
+# +++ Parallelization +++
 n_gpus = torch.cuda.device_count()
 print(f'→ Finetuning on {n_gpus} GPUs')
-
+batch_size = args.batch_size
 if args.parallel == 'dp' and n_gpus > 1:
     ft_model =  nn.DataParallel(ft_model)
     batch_size = n_gpus * args.batch_size
 print(f'→ Selected (Overall) Batch size for {dataset_name} is {batch_size}')
-    
+
+# +++ Create dataloaders +++
+ft_tr = DatasetforDataloader(X_tr, y_tr)
+ft_va = DatasetforDataloader(X_va, y_va)
+ft_te = DatasetforDataloader(X_te, y_te)
+
+ft_tr_loader = DataLoader(ft_tr, batch_size=batch_size, shuffle=True)
+ft_va_loader = DataLoader(ft_va, batch_size=batch_size, shuffle=False)
+ft_te_loader = DataLoader(ft_te, batch_size=batch_size, shuffle=False)
+print(f'→ Length dataloader: Tr {len(ft_tr_loader)}, Val {len(ft_va_loader)}, Te {len(ft_te_loader)}')
+
 #%% Fine-tuning setup
 from src.utils.select_fine_tuning_parameters import SelectFineTuningParameters
 selector = SelectFineTuningParameters(ft_model, args)
@@ -297,7 +306,8 @@ if args.ckpt_from == 'FM':
         state_dict = {k.replace("module.", "", 1): v for k, v in state_dict.items()}
         
     # strict=False because ft_model has extra LoRA params (A/B) not in ckpt
-    missing, unexpected = target.load_state_dict(state_dict, strict=True)
+    flag = True if args.ft_level4 else False
+    missing, unexpected = target.load_state_dict(state_dict, strict=flag)
     
     # sanity print
     print("Missing keys (expected: LoRA A/B etc.):",
@@ -348,7 +358,8 @@ for epoch in range(start_epoch, args.n_epochs):
     train_losses.append(tr_loss)
     val_losses.append(vl_loss)
     
-    scheduler.step(vl_loss)
+    if args.lr_scheduler:
+        scheduler.step(vl_loss)
     
     # Get current LR (from first param group)
     current_lr = optimizer.param_groups[0]['lr']
@@ -401,7 +412,7 @@ out_all, tar_all = [],[]
 with torch.no_grad():
     for inp, tar in tqdm(ft_te_loader):
         inp = inp.to(device)
-        out = ft_model(inp)
+        _,_, out = ft_model(inp)
         out_all.append(out.detach().cpu())
         tar_all.append(tar)
 out_all = torch.concat(out_all, dim = 0)
