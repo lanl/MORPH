@@ -17,7 +17,8 @@ class Visualize3DRolloutPredictions:
         with torch.no_grad():
             for _ in range(num_steps):
                 inp  = current_vol.unsqueeze(1).to(self.device)   # (B, t, F, C, D, H, W)
-                _, _, pred = self.model(inp).cpu()                      # (B, F, C, D, H, W)
+                _, _, pred = self.model(inp)                      # (B, F, C, D, H, W)
+                pred = pred.cpu()
                 preds.append(pred.unsqueeze(1))                   # (B, t, F, C, D, H, W)
                 current_vol = pred 
         return preds

@@ -22,7 +22,8 @@ class Visualize3DPredictions:
             input_tensor shape [N,T,F,C,D,H,W]
             '''
             input_tensor = input_vol.unsqueeze(1).to(self.device) # [B=1,T=1,F,C,D,H,W]        
-            _, _, prediction = self.model(input_tensor).cpu()           # [B=1,F,C,D,H,W]
+            _, _, prediction = self.model(input_tensor)           # [B=1,F,C,D,H,W]
+            prediction = prediction.cpu()
             
             #print(f'input:{input_tensor.shape}, pred:{prediction.shape}')
             # Get shapes
