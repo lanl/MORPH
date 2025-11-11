@@ -1,0 +1,103 @@
+
+## User Guide for finetuning MORPH
+
+### Clone the repository
+To clone the repository, click on top-right 'code' and select 'clone with HTTPS' and copy the code path and paste in the terminal.
+```
+git clone https://github.com/lanl/MORPH.git
+```
+Go to the directory
+```
+cd MORPH
+```
+### Install the requirements
+- Install dependencies via environment.yml
+```
+conda env create -f environment.yml
+```
+- Activate the environment
+```
+conda activate pytorch_py38_env
+```
+- Install pytorch
+```
+pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118                    
+```
+- Check pytorch installation
+```
+python -c "import torch; print('PyTorch version:', torch.__version__); print('CUDA available:', torch.cuda.is_available())"
+```
+Output: 
+PyTorch version: 2.4.1+cu118
+CUDA available: True
+
+### Setup the dataset 
+- The default dataset directory stays in 
+```
+cd datasets
+```
+- The dataset need to be in .npy/.h5/.nc formats
+- For .h5/.nc formats, convert to .npy format first using
+```
+python src/utils/convert_nc_h5_to_npy.py --data_format nc --source_nc_file fns-kf/solution_0.nc --target_npy_loc fns-kf
+```
+
+### Run the finetuning code
+- Finetuning scripts ask for ".npy" file.
+- The scripts convert into UPTF-7 format and performs ReVIN (Reversible Instance Normalization).
+- The scripts load weights from "models/FM" folder or downloads from hugging face.
+- The results are saved in "experiments/results" folder
+
+- Check all the arguments for running the script
+```
+python scripts/finetune_MORPH_general.py -h
+```
+
+- Demo finetune run: fns-kf data, MORPH-FM-Ti, level-1 finetuning, 5 epochs, 100 trajectories
+```
+python scripts/finetune_MORPH_general.py --dataset fns-kf/solution_0.npy --dataset_name fns-kf --dataset_specs 2 1 1 128 128 --model_choice FM --model_size Ti --ckpt_from FM --checkpoint morph-Ti-FM-max_ar1_ep225.pth --ft_level1 --parallel no --n_epochs 5 --n_traj 100
+```
+
+- Demo inference run: set --n_epochs 0
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
