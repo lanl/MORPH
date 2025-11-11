@@ -1,3 +1,4 @@
+from fileinput import filename
 from json import load
 import os
 import sys
@@ -10,6 +11,7 @@ import matplotlib.pyplot as plt
 from torch.utils.data import Dataset, DataLoader
 import numpy as np
 from tqdm import tqdm
+from huggingface_hub import hf_hub_download
 from sklearn.model_selection import train_test_split
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 os.environ["MPLBACKEND"] = "Agg"      # safest: force non-GUI backend
@@ -52,11 +54,13 @@ parser.add_argument('--dataset_name', type=str, help="Name of the dataset", defa
 parser.add_argument('--dataset_specs', nargs=5, type=int, metavar=('F','C','D','H','W'),
                     default=[2,1,1,128,128], help="Dataset specs")
 parser.add_argument('--model_choice', type=str, default = 'FM', help = "Model to finetune")
+parser.add_argument('--download_model', action='store_true', help="Download model weights")
 parser.add_argument('--model_size', type=str, choices = list(MORPH_MODELS.keys()),
                     default='Ti', help='choose from Ti, S, M, L')
 parser.add_argument('--ckpt_from', type=str, choices = ['FM','FT'], default = 'FM',
                     help="Checkpoint information from FM or previous FT", required = True)
-parser.add_argument('--checkpoint', type=str, help="Path to saved .pth state dict", required=True)
+parser.add_argument('--checkpoint', type=str, default=None,
+                    help="Path to saved .pth state dict if download_model is False")
 
 # --- Finetune levels ---                     
 parser.add_argument('--ft_level1', action='store_true', help = "Level-1 finetuning (LoRA, PE, LN)")
@@ -137,6 +141,30 @@ if ext == ".npy":
     print("Original dataset shape", dataset.shape)
 else:
     raise ValueError("Unsupported dataset format. Need a .npy file.")
+
+# +++ download model if needed +++
+if args.download_model and args.ckpt_from == 'FM' and args.checkpoint == None:
+    print(f'→ Downloading model weights from hugging face...')
+    if args.model_size == 'Ti':
+        fname = 'morph-Ti-FM-max_ar1_ep225.pth'
+    elif args.model_size == 'S':
+        fname = 'morph-S-FM-max_ar1_ep225.pth'
+    elif args.model_size == 'M':
+        fname = 'morph-M-FM-max_ar1_ep290_latestbatch.pth'
+    elif args.model_size == 'L':
+        fname = 'morph-L-FM-max_ar16_ep189_latestbatch.pth'
+
+    # e.g., grab the "Ti" checkpoint (change filename as needed)
+    weights_path = hf_hub_download(
+        repo_id="mahindrautela/MORPH",
+        filename=fname,
+        subfolder="models/FM",          # <local_dir>/<subfolder>/<filename>
+        repo_type="model",              # optional
+        resume_download=True,           # continue if interrupted
+        local_dir=".",                  # download to current directory 
+       local_dir_use_symlinks=False    # copy file instead of symlink
+    )
+    print(f'MORPH-FM-{args.model_size} weights saved to {weights_path}')
 
 # number of samples and trajectory length
 num_samples = dataset.shape[0]
@@ -294,7 +322,11 @@ start_epoch = 0
 if args.ckpt_from == 'FM':
     print(f"→ Loading checkpoints from {args.ckpt_from}")
     # --- Load pretrained checkpoint from foundational model ---
-    checkpoint_path = os.path.join(savepath_model, f'{args.model_choice}', args.checkpoint)
+    if args.checkpoint is None:
+        checkpoint = fname
+    else:
+        checkpoint = args.checkpoint
+    checkpoint_path = os.path.join(savepath_model, f'{args.model_choice}', checkpoint)
     ckpt = torch.load(checkpoint_path, map_location=device, weights_only=True)
     state_dict = ckpt["model_state_dict"]
     
