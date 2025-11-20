@@ -11,6 +11,11 @@ Go to the directory
 cd MORPH
 ```
 ### Install the requirements
+- *Conda availability on cluster
+```
+module load anaconda/2024.10
+source "$(conda info --base)/etc/profile.d/conda.sh"
+```
 - Install dependencies via environment.yml
 ```
 conda env create -f environment.yml
