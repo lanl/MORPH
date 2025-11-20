@@ -40,7 +40,7 @@ cd datasets
 - You can run this in terminal (root directory).
 ```
 hf download camlab-ethz/FNS-KF solution_0.nc --repo-type dataset --local-dir "datasets/fns-kf"
-``
+```
 - The dataset need to be in .npy/.h5/.nc formats.
 - For .h5/.nc formats, convert to .npy format using
 ```
