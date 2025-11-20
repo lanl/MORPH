@@ -7,6 +7,7 @@ dependencies:
   - matplotlib
   - scikit-learn
   - tqdm
+  - netcdf4
   - pip
   - pip:
     - h5py
