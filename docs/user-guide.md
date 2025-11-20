@@ -63,10 +63,16 @@ python src/utils/convert_nc_h5_to_npy.py --data_format nc --source_nc_file fns-k
 - The results are saved in "experiments/results" folder
 
 - Check all the arguments for running the script
+
 ```
 python scripts/finetune_MORPH_general.py -h
 ```
 
+- Demo finetune run: checkpoint doesn't exists, fns-kf data, MORPH-FM-Ti, level-1 finetuning, 5 epochs, 100 trajectories
+
+```
+python scripts/finetune_MORPH_general.py --dataset fns-kf/solution_0.npy --dataset_name fns-kf --dataset_specs 2 1 1 128 128 --model_choice FM --model_size Ti --ckpt_from FM  --ft_level1 --parallel no --n_epochs 5 --n_traj 100 --download_model
+```
 - Demo finetune run: checkpoint exists, fns-kf data, MORPH-FM-Ti, level-1 finetuning, 5 epochs, 100 trajectories
 ```
 python scripts/finetune_MORPH_general.py --dataset fns-kf/solution_0.npy --dataset_name fns-kf --dataset_specs 2 1 1 128 128 --model_choice FM --model_size Ti --ckpt_from FM --checkpoint morph-Ti-FM-max_ar1_ep225.pth --ft_level1 --parallel no --n_epochs 5 --n_traj 100
