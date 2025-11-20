@@ -32,12 +32,17 @@ PyTorch version: 2.4.1+cu118
 CUDA available: True
 
 ### Setup the dataset 
-- The default dataset directory stays in 
+- The dataset directory is
 ```
 cd datasets
 ```
-- The dataset need to be in .npy/.h5/.nc formats
-- For .h5/.nc formats, convert to .npy format first using
+- For demo run, create a subfolder fns-kf inside "datasets" folder. Then download the data "solution_0.nc" from [PDEGym](https://huggingface.co/datasets/camlab-ethz/FNS-KF/tree/main).
+- The dataset need to be in .npy/.h5/.nc formats.
+- For .h5/.nc formats, convert to .npy format using
+```
+python src/utils/convert_nc_h5_to_npy.py --data_format nc --source_nc_file <> --target_npy_loc <>
+```
+- For demo run,
 ```
 python src/utils/convert_nc_h5_to_npy.py --data_format nc --source_nc_file fns-kf/solution_0.nc --target_npy_loc fns-kf
 ```
@@ -65,6 +70,13 @@ python scripts/finetune_MORPH_general.py --dataset fns-kf/solution_0.npy --datas
 ```
 
 - Demo inference run: set --n_epochs 0
+
+### Results
+The results of finetuning/inference will appear in 'experiments/results/test'. Types of results
+1. learning curve
+2. metrics (mse,rmse,mae,nrmse,vrmse) as a .txt file
+3. images: next frame prediction
+4. images: rollouts
 
 
 
