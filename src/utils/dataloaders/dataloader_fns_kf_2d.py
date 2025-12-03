@@ -1,6 +1,7 @@
 import os
 import numpy as np
 import h5py
+from src.utils.main_process_ddp import is_main_process
 
 def split_and_save_h5(raw_h5_loadpath, savepath, dataset_name='FNS-KF', 
                       train_frac=0.8, rand=True):
@@ -104,14 +105,21 @@ class FNSKF2dDataLoader:
         print(f"[{self.dataset_name}] Importing training data...")
         train_data = self.load_split('train')
         train_data = self.inflate_array(train_data, axes=[2,6]) # add 'D' and 'F'
+        if is_main_process():
+            print(f"[{self.dataset_name}] Training data shape after inflation: {train_data.shape}")
         
         print(f"[{self.dataset_name}] Importing validation data...")
         val_data = self.load_split('val')
         val_data = self.inflate_array(val_data, axes=[2,6])
+        if is_main_process():
+            print(f"[{self.dataset_name}] Validation data shape after inflation: {val_data.shape}")
+
         return train_data, val_data
 
     def split_test(self):
         print(f"[{self.dataset_name}] Importing test data...")
         test_data = self.load_split('test')
         test_data = self.inflate_array(test_data, axes=[2,6])
+        if is_main_process():
+            print(f"[{self.dataset_name}] Test data shape after inflation: {test_data.shape}")
         return test_data

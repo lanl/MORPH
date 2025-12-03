@@ -2,6 +2,8 @@ import os
 import numpy as np
 import h5py
 
+from src.utils.main_process_ddp import is_main_process
+
 def split_and_save_h5(raw_h5_loadpath, savepath, dataset_name='NS', 
                       train_frac=0.8, rand=True):
     print("Spliting the file into train/val/test...")
@@ -78,10 +80,15 @@ class NS2dDataLoader:
         # only .h5 and .hdf5 files now
         files = [f for f in os.listdir(split_path)
                  if f.endswith('.h5') or f.endswith('.hdf5')]
+        
+        if is_main_process():
+            print(f"[{self.dataset_name}] Loading {len(files)} files from {split_path}...")
+
         arrays = []
 
         for fname in files:
             path = os.path.join(split_path, fname)
+            # print(f'Current file: {path}')
             with h5py.File(path, 'r') as f5:
                 # read fields
                 vel = f5['velocity'][:]   # (20000,21,3,128,128)
@@ -89,27 +96,40 @@ class NS2dDataLoader:
                 
                 # not taking passive tracker present in the dataset
                 data = vel[:,:,:,:,0:2] # (160,1001,128,128,2)
-                print(f'Shape of data: {data.shape}')
+                # print(f'Shape of loaded file: {data.shape}')
                 
             arrays.append(data.astype('float32'))
 
         if arrays:
-            return np.concatenate(arrays, axis=0)
+            arrays = np.concatenate(arrays, axis=0)
+            if is_main_process():
+                print(f"[{self.dataset_name}] Shape of concatenated arrays: {arrays.shape}")
+            return arrays
         else:
             return np.empty((0,), dtype='float32')
 
     def split_train(self):
-        print(f"[{self.dataset_name}] Importing training data...")
+        if is_main_process():
+            print(f"[{self.dataset_name}] Importing training data...")
         train_data = self.load_split('train')
         train_data = self.inflate_array(train_data, axes=[2,6]) # add 'D' and 'F'
+        if is_main_process():
+            print(f"[{self.dataset_name}] Training data shape after inflation: {train_data.shape}")
         
-        print(f"[{self.dataset_name}] Importing validation data...")
+        if is_main_process():
+            print(f"[{self.dataset_name}] Importing validation data...")
         val_data = self.load_split('val')
         val_data = self.inflate_array(val_data, axes=[2,6])
+        if is_main_process():
+            print(f"[{self.dataset_name}] Validation data shape after inflation: {val_data.shape}")
+
         return train_data, val_data
 
     def split_test(self):
-        print(f"[{self.dataset_name}] Importing test data...")
+        if is_main_process():
+            print(f"[{self.dataset_name}] Importing test data...")
         test_data = self.load_split('test')
         test_data = self.inflate_array(test_data, axes=[2,6])
+        if is_main_process():
+            print(f"[{self.dataset_name}] Test data shape after inflation: {test_data.shape}")
         return test_data

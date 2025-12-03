@@ -1,9 +1,12 @@
 import matplotlib.pyplot as plt
+import torch.nn.functional as F
 import torch
 import os 
 
 class Visualize3DRolloutPredictions:
-    def __init__(self, model, test_dataset, device, field_names, component_names):
+    def __init__(self, model, 
+                 test_dataset,
+                 device, field_names, component_names):
         self.model = model
         self.test_dataset = test_dataset
         self.device = device
@@ -17,11 +20,34 @@ class Visualize3DRolloutPredictions:
         with torch.no_grad():
             for _ in range(num_steps):
                 inp  = current_vol.unsqueeze(1).to(self.device)   # (B, t, F, C, D, H, W)
-                _, _, pred = self.model(inp)                      # (B, F, C, D, H, W)
-                pred = pred.cpu()
+                pred = self.model(inp).cpu()                      # (B, F, C, D, H, W)
                 preds.append(pred.unsqueeze(1))                   # (B, t, F, C, D, H, W)
                 current_vol = pred 
         return preds
+    
+    def rollout_mse(self, test_dataset_full,
+                    start_step: int, num_steps: int):
+        self.model.eval()
+        mse_all = []
+        for n in range(test_dataset_full.shape[0]): # over test trajectories
+            preds = []
+            current_vol = test_dataset_full[n,start_step].unsqueeze(0) # (F, C, D, H, W)
+            # print(f'current test traj {n} starting shape:{current_vol.shape}')
+            with torch.no_grad():
+                for _ in range(num_steps):
+                    inp  = current_vol.unsqueeze(1).to(self.device)   # (B, t, F, C, D, H, W)
+                    pred = self.model(inp).cpu()                      # (B, F, C, D, H, W)
+                    preds.append(pred.unsqueeze(1))                   # (B, t, F, C, D, H, W)
+                    current_vol = pred 
+        
+            # calculate rollout MSE
+            preds_traj = torch.cat(preds, dim=1) # (1, num_steps, F, C, D, H, W)
+            true_traj = test_dataset_full[n,1:].unsqueeze(0)     # (1, num_steps, F, C, D, H, W)
+            # print(f'True Trajectory shape :{true_traj.shape}, Predicted Traj. shape :{preds_traj.shape}')
+            mse_ro = F.mse_loss(true_traj, preds_traj, reduction='mean') # for single trajectory
+            # print(f'Trajectory {n}: → Rollout MSE over {num_steps} steps: {mse_ro.item():.6f}')
+            mse_all.append(mse_ro.item())
+        return sum(mse_all)/len(mse_all)
 
     def visualize_rollout(self,
                           start_step: int = 0,
@@ -46,7 +72,7 @@ class Visualize3DRolloutPredictions:
         # 2) roll out predictions
         preds = self.rollout_predictions(start_step, num_steps)
         
-        # print the shapes
+        # print the shapes (for single test trajectory)
         print(f'Predict {len(preds)} steps: Current True vols:{true_vols[0].shape}, Pred vols: {preds[0].shape}')
 
         # prepare figure: 3 rows × num_steps columns
