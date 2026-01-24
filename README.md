@@ -1,5 +1,5 @@
 <div align="center">
-<h1>MORPH: Shape-agnostic PDE foundational models</h1>
+<h1>MORPH: PDE Foundation Models with Arbitrary Data Modality</h1>
 <a href='https://arxiv.org/abs/2509.21670'><img src='https://img.shields.io/badge/ArXiv-Preprint-red'></a>
 <a href='https://huggingface.co/mahindrautela/MORPH'><img src='https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Model-blue'></a>
 </div>
@@ -79,14 +79,11 @@ python scripts/infer_MORPH.py -h
 
 If you use MORPH in your research, please cite:
 ```
-@misc{rautela2025morphshapeagnosticpdefoundation,
-  title={{MORPH}: Shape-agnostic {PDE} Foundation Models},
-  author={Mahindra Singh Rautela and Alexander Most and Siddharth Mansingh and Bradley C. Love and Ayan Biswas and Diane Oyen and Earl Lawrence},
-  year={2025},
-  eprint={2509.21670},
-  archivePrefix={arXiv},
-  primaryClass={cs.CV},
-  url={https://arxiv.org/abs/2509.21670}
+@article{rautela2025morph,
+  title={MORPH: PDE Foundation Models with Arbitrary Data Modality},
+  author={Rautela, Mahindra Singh and Most, Alexander and Mansingh, Siddharth and Love, Bradley C and Biswas, Ayan and Oyen, Diane and Lawrence, Earl},
+  journal={arXiv preprint arXiv:2509.21670},
+  year={2025}
 }
 ```
 
