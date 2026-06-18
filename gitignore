@@ -1,14 +1,15 @@
 # ---Ignore datasets---
 datasets/
-
-# ---Ignore results---
-experiments/results/
+data/
 
 # ---Ignore specific results---
-experiments/heat/
+experiments/
+comparisons/
+wandb/
 
 # ---Ignore models---
 models/
+
 
 # Ignore Python bytecode files
 **/__pycache__/
