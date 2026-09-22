@@ -3,7 +3,6 @@
 /datasets/
 /data/
 /comparisons/
-/experiments/
 /wandb/
 
 # Python cache
