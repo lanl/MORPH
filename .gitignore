@@ -1,0 +1,26 @@
+# --- Ignore top-level repository folders ---
+
+/models/
+/datasets/
+/data/
+/comparisons/
+/wandb/
+
+# --- Ignore heavy/generated folders inside experiments ---
+
+/experiments/**/data/
+/experiments/**/datasets/
+/experiments/**/models/
+/experiments/**/results/
+/experiments/**/wandb/
+/experiments/**/wandb_results/
+/experiments/**/repo/
+/experiments/**/senseiver/
+
+/experiments/ft_llnl_jag/icf-jag-10k/
+
+# --- Python cache ---
+
+__pycache__/
+*.py[cod]
+*$py.class
