@@ -1,5 +1,6 @@
 <div align="center">
 <h1>MORPH: PDE Foundation Models with Arbitrary Data Modality</h1>
+<a href='https://mahindrautela.github.io/morph/'><img src='![Static Badge](https://img.shields.io/badge/projectpage-morph-blue)'></a>
 <a href='https://arxiv.org/abs/2509.21670'><img src='https://img.shields.io/badge/ArXiv-Preprint-red'></a>
 <a href='https://huggingface.co/mahindrautela/MORPH'><img src='https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Model-blue'></a>
 </div>
