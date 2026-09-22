@@ -6,12 +6,32 @@
 /wandb/
 
 # --- Ignore generated folders inside experiments ---
-/experiments/**/results/
-/experiments/**/datasets/
-/experiments/**/wandb_results/
-/experiments/**/models/
-/experiments/**/data/
-/experiments/**/icf-jag-10k/
+/experiments/ft_llnl_jag/data/
+/experiments/ft_llnl_jag/icf-jag-10k/
+/experiments/ft_llnl_jag/models/
+/experiments/ft_llnl_jag/results/
+/experiments/ft_llnl_jag/wandb_results/
+/experiments/lagrange/datasets/
+/experiments/lagrange/models/
+/experiments/lagrange/results/
+/experiments/lansce/datasets/
+/experiments/lansce/models/
+/experiments/lansce/results/
+/experiments/mat_prop/datasets/
+/experiments/mat_prop/models/
+/experiments/mat_prop/results/
+/experiments/mat_prop/wandb_results/
+/experiments/mdr/datasets/
+/experiments/mdr/models/
+/experiments/mdr/results/
+/experiments/mdr/senseiver/
+/experiments/mdr/wandb/
+/experiments/shm/datasets/
+/experiments/shm/models/
+/experiments/shm/results/
+/experiments/shm/wandb_results/
+/experiments/shm/repo/
+
 
 # --- Python cache ---
 __pycache__/
