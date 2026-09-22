@@ -11,6 +11,7 @@
 /experiments/**/wandb_results/
 /experiments/**/models/
 /experiments/**/data/
+/experiments/**/icf-jag-10k/
 
 # --- Python cache ---
 __pycache__/
