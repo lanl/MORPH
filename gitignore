@@ -1,4 +1,4 @@
-# --- Ignore entire repository folders ---
+# Ignore entire repository folders
 /models/
 /datasets/
 /data/
@@ -6,7 +6,7 @@
 /experiments/
 /wandb/
 
-# --- Ignore Python bytecode/cache files ---
+# Python cache
 __pycache__/
 *.py[cod]
 *$py.class
