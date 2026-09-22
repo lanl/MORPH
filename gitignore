@@ -1,11 +1,17 @@
-# Ignore entire repository folders
+# --- Ignore top-level repository folders ---
 /models/
 /datasets/
 /data/
 /comparisons/
 /wandb/
 
-# Python cache
+# --- Ignore generated folders inside experiments ---
+/experiments/**/results/
+/experiments/**/datasets/
+/experiments/**/wandb_results/
+/experiments/**/models/
+
+# --- Python cache ---
 __pycache__/
 *.py[cod]
 *$py.class
