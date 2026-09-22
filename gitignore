@@ -1,17 +1,12 @@
-# ---Ignore datasets---
-datasets/
-data/
+# --- Ignore entire repository folders ---
+/models/
+/datasets/
+/data/
+/comparisons/
+/experiments/
+/wandb/
 
-# ---Ignore specific results---
-experiments/
-comparisons/
-wandb/
-
-# ---Ignore models---
-models/
-
-
-# Ignore Python bytecode files
-**/__pycache__/
+# --- Ignore Python bytecode/cache files ---
+__pycache__/
 *.py[cod]
 *$py.class
