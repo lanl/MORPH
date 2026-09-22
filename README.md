@@ -12,12 +12,12 @@
 
 ### Pretraining sets
 <p align="center">
-  <img src="pt.png" width="850" alt="Pretraining sets">
+  <img src="pretraining_sets.png" width="850" alt="Pretraining sets">
 </p>
 
 ### Finetuning sets
 <p align="center">
-  <img src="ft.png" width="850" alt="Finetuning sets">
+  <img src="fluid_systems_finetuning_sets.png" width="850" alt="Finetuning sets">
 </p>
 
 ----------
