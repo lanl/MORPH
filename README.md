@@ -283,14 +283,6 @@ Match: True
 
 The current integration test performs the direct comparison on `cuda:0`, so a CUDA-capable GPU is required to reproduce the exact test as currently written.
 
-### 7. Stop the server
-
-When finished, stop the NOMAD server with:
-
-```text
-Ctrl+C
-```
-
 ### NOMAD/MCP troubleshooting
 
 **`ModuleNotFoundError: No module named 'morph_pde.nomad_tool'`**
@@ -323,14 +315,6 @@ Confirm that this file exists:
 ```text
 models/morph-ti-fm/model.pth
 ```
-
-**Port 8000 is already in use / Windows `WinError 10048`**
-
-A NOMAD server is already running on port 8000. Do not start a second server. Stop the existing server with `Ctrl+C`, or use another port and update the MCP client URL accordingly.
-
-**MCP Inspector shows `GET /mcp` with `405 Method Not Allowed`**
-
-MCP communication uses the supported MCP HTTP requests. If `tools/list` and `tools/call` succeed, an isolated browser/Inspector `GET` response is not an indication that MORPH inference failed.
 
 ### Current integration limitations
 
