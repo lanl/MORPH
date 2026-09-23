@@ -334,12 +334,17 @@ MCP communication uses the supported MCP HTTP requests. If `tools/list` and `too
 
 The current MCP integration is intentionally minimal:
 
-- it currently targets the MORPH-Ti flow-matching checkpoint;
+- it currently targets the MORPH-Ti checkpoint;
 - MORPH-Ti architecture parameters are currently specified in `nomad_tool.py`;
 - the checkpoint is currently expected from local storage; and
 - `tests/test_mcp.py` currently uses a synthetic tensor for the end-to-end equivalence test.
 
-Future integration work can move the model configuration into a model artifact such as `config.json`, add a complete model card, host the NOMAD-ready artifact on Hugging Face, validate a real PDE sample, and use the same adapter for additional MORPH model sizes.
+Future integration work can move the model configuration into a model artifact such as 
+- `config.json`, 
+- add a complete model card, 
+- host the NOMAD-ready artifact on Hugging Face, 
+- validate a real PDE sample, and 
+- use the same adapter for additional MORPH model sizes.
 
 ---
 
