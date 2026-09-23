@@ -1,5 +1,7 @@
 <div align="center">
 
+<img src="docs/assets/morph_logo.png" alt="MORPH Physics Foundation Model" width="780">
+
 # MORPH: PDE Foundation Models with Arbitrary Data Modality
 
 <a href="https://mahindrautela.github.io/morph/"><img src="https://img.shields.io/badge/projectpage-morph-blue"></a>
@@ -13,7 +15,7 @@ MORPH is a multimodal PDE foundation model designed to learn across heterogeneou
 The figure below summarizes the MORPH architecture and its unified treatment of heterogeneous scientific data.
 
 <p align="center">
-  <img src="morph_main.png" width="850" alt="Architecture of MORPH">
+  <img src="docs/assets/morph_main.png" width="850" alt="Architecture of MORPH">
 </p>
 
 <div align="center">
@@ -23,7 +25,7 @@ The figure below summarizes the MORPH architecture and its unified treatment of 
 </div>
 
 <p align="center">
-  <img src="pretraining_sets.png" width="850" alt="Pretraining sets">
+  <img src="docs/assets/pretraining_sets.png" width="850" alt="Pretraining sets">
 </p>
 
 <div align="center">
@@ -33,7 +35,7 @@ The figure below summarizes the MORPH architecture and its unified treatment of 
 </div>
 
 <p align="center">
-  <img src="fluid_systems_finetuning_sets.png" width="850" alt="Finetuning sets for autoregressive rollouts">
+  <img src="docs/assets/fluid_systems_finetuning_sets.png" width="850" alt="Finetuning sets for autoregressive rollouts">
 </p>
 
 ---
