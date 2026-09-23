@@ -22,12 +22,12 @@ savepath_results = os.path.join(project_root, 'experiments', 'results')
     
 # Main entry
 # Import model, trainers, and data loader
-from config.argument_parser_pdegym import ArgsConfig
-from src.utils.device_manager import DeviceManager
-from src.utils.vit_conv_xatt_axialatt2 import ViT3DRegression
-from src.utils.main_process_ddp import is_main_process
-from src.utils.dataloaders.dataloading_pdegym import pdegym_datasets, build_dataloaders
-from src.utils.trainers_pdegym import train_one_epoch_multitask, validate_multitask
+from morph_pde.config.argument_parser_pdegym import ArgsConfig
+from morph_pde.utils.device_manager import DeviceManager
+from morph_pde.utils.vit_conv_xatt_axialatt2 import ViT3DRegression
+from morph_pde.utils.main_process_ddp import is_main_process
+from morph_pde.utils.dataloaders.dataloading_pdegym import pdegym_datasets, build_dataloaders
+from morph_pde.utils.trainers_pdegym import train_one_epoch_multitask, validate_multitask
 
 # ---- arguments ----
 args = ArgsConfig()

@@ -24,7 +24,7 @@ from experiments.ft_llnl_jag.model_morph_ft import morph_ft
 from experiments.mdr.dataloading_sst import Dataloading
 from experiments.mdr.pre_viz_sst import PreVisualization
 from experiments.ft_llnl_jag.lr_schedulars import LRSched
-from src.utils.device_manager import DeviceManager
+from morph_pde.utils.device_manager import DeviceManager
 from experiments.mdr.trainer_sst import Trainer
 from experiments.mdr.post_viz_sst import learning_curves, visualize_target_prediction_samples
 # from experiments.lansce.compute_rollout_metrics import rollout_metrics

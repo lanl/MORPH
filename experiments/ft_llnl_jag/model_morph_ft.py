@@ -1,7 +1,7 @@
 import math
 import os
-from src.utils.vit_conv_xatt_axialatt2 import ViT3DRegression 
-from src.utils.optimizer_finetuning import SelectFineTuningParameters
+from morph_pde.utils.vit_conv_xatt_axialatt2 import ViT3DRegression
+from morph_pde.utils.optimizer_finetuning import SelectFineTuningParameters
 from experiments.ft_llnl_jag.absolute_positional_encoding import AbsolutePositionalEncoding
 from huggingface_hub import hf_hub_download
 import torch.nn as nn
@@ -18,9 +18,9 @@ def _override_with_absolute_positional_encoding(model, max_ar, max_patches, dim,
     print("→ Overrode learned positional encoding with fixed absolute positional encoding")
 
 def morph_ft(model_variant='S', device='cpu',
-            standalone = False,  
+            standalone = False,
             rank_lora_attn = 0, rank_lora_mlp = 0, lora_p = 0.05,
-            lr_morph=1e-4, 
+            lr_morph=1e-4,
             wd_morph=1e-5,
             l1 = False,
             l2 = False,
@@ -28,7 +28,7 @@ def morph_ft(model_variant='S', device='cpu',
             l4 = False,
             use_absolute_positional_encoding = False,
             model_dir=None):
-    
+
     # --- MORPH CONFIGURATION ---
     MORPH_MODELS = {
         'Ti': [8, 256,  4,  4, 1024],
@@ -67,9 +67,9 @@ def morph_ft(model_variant='S', device='cpu',
     if standalone == False:
         print("==== Fine-tuning MORPH from foundational model weights ====")
         # load the foundational model weights
-        checkpoint_name = {'Ti':"morph-Ti-FM-max_ar1_ep225.pth", 
+        checkpoint_name = {'Ti':"morph-Ti-FM-max_ar1_ep225.pth",
                         'S': "morph-S-FM-max_ar1_ep225.pth",
-                        'M': "morph-M-FM-max_ar1_ep290_latestbatch.pth", 
+                        'M': "morph-M-FM-max_ar1_ep290_latestbatch.pth",
                         'L': "morph-L-FM-max_ar16_ep189_latestbatch.pth"}
 
         if os.path.exists(os.path.join(model_dir, "FM", checkpoint_name[model_variant])):
@@ -95,13 +95,13 @@ def morph_ft(model_variant='S', device='cpu',
         ckpt = torch.load(weights_path, map_location=device, weights_only=True)
         state_dict = ckpt["model_state_dict"]
 
-        # pick the real model if wrapped   
-        target = morph.module if isinstance(morph, nn.DataParallel) else morph 
+        # pick the real model if wrapped
+        target = morph.module if isinstance(morph, nn.DataParallel) else morph
 
         if state_dict and next(iter(state_dict)).startswith("module."):
             print("→ Stripping 'module.' from checkpoints")
             state_dict = {k.replace("module.", "", 1): v for k, v in state_dict.items()}
-            
+
         # strict=False because ft_model has extra LoRA params (A/B) not in ckpt
         missing, unexpected = target.load_state_dict(state_dict, strict=False)
 
@@ -126,7 +126,7 @@ def morph_ft(model_variant='S', device='cpu',
                                              ft_level1=l1, ft_level2=l2,
                                              ft_level3=l3, ft_level4=l4)
         optimizer = selector.configure_levels()
-    
+
     else:
         print("==== Training MORPH from scratch (standalone=True) ====")
         if use_absolute_positional_encoding:

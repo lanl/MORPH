@@ -1,16 +1,14 @@
 import os
-import sys
 import numpy as np
 import h5py
 
 # Add project root to path
 current_dir  = os.path.dirname(os.path.abspath(__file__))
 project_root = os.path.abspath(os.path.join(current_dir, '..'))
-sys.path.append(project_root)
 
-from src.utils.data_plotter import DataPlotter
-from src.utils.explore_hdf5 import ExploreHDF5Structure
-from config.data_config_vis import DataConfig
+from morph_pde.utils.data_plotter import DataPlotter
+from morph_pde.utils.explore_hdf5 import ExploreHDF5Structure
+from morph_pde.config.data_config_vis import DataConfig
 
 # raw data directory
 dataset_dir = "D:/data"

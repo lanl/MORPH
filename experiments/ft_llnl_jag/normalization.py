@@ -1,5 +1,5 @@
 import numpy as np
-from src.utils.normalization import RevIN
+from morph_pde.utils.normalization import RevIN
 
 # Normalize function
 def normalize_params(params):

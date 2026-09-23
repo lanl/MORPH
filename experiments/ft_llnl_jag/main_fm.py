@@ -28,7 +28,7 @@ from post_training_visualization import learning_curves
 from post_training_visualization import plot_ytrue_vs_ypred
 from post_training_visualization import plot_original_vs_predicted_images
 from lr_schedulars import LRSched
-from src.utils.device_manager import DeviceManager
+from morph_pde.utils.device_manager import DeviceManager
 
 # Define important directories
 data_dir = os.path.join(project_root, "experiments", "ft_llnl_jag", "data")

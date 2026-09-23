@@ -23,15 +23,15 @@ project_root = os.path.abspath(os.path.join(current_dir, '..'))
 sys.path.append(project_root)
 
 # load the classes
-from src.utils.device_manager import DeviceManager
-from src.utils.vit_conv_xatt_axialatt2 import ViT3DRegression
-from src.utils.metrics_3d import Metrics3DCalculator
-from src.utils.visualize_predictions_3d_full import Visualize3DPredictions
-from src.utils.visualize_rollouts_3d_full import Visualize3DRolloutPredictions
-from src.utils.data_preparation_fast import FastARDataPreparer
-from config.data_config import DataConfig
-from src.utils.normalization import RevIN
-from src.utils.uptf7 import UPTF7
+from morph_pde.utils.device_manager import DeviceManager
+from morph_pde.utils.vit_conv_xatt_axialatt2 import ViT3DRegression
+from morph_pde.utils.metrics_3d import Metrics3DCalculator
+from morph_pde.utils.visualize_predictions_3d_full import Visualize3DPredictions
+from morph_pde.utils.visualize_rollouts_3d_full import Visualize3DRolloutPredictions
+from morph_pde.utils.data_preparation_fast import FastARDataPreparer
+from morph_pde.config.data_config import DataConfig
+from morph_pde.utils.normalization import RevIN
+from morph_pde.utils.uptf7 import UPTF7
 from pathlib import Path
 from sklearn.model_selection import train_test_split
 
@@ -299,7 +299,7 @@ ft_te_loader = DataLoader(ft_te, batch_size=batch_size, shuffle=False)
 print(f'→ Length dataloader: Tr {len(ft_tr_loader)}, Val {len(ft_va_loader)}, Te {len(ft_te_loader)}')
 
 #%% Fine-tuning setup
-from src.utils.select_fine_tuning_parameters import SelectFineTuningParameters
+from morph_pde.utils.select_fine_tuning_parameters import SelectFineTuningParameters
 selector = SelectFineTuningParameters(ft_model, args)
 optimizer = selector.configure_levels()
 ft_model.train().to(device)
@@ -373,7 +373,7 @@ else:
     
 #%% Fine tuning 
 import time
-from src.utils.trainers import Trainer
+from morph_pde.utils.trainers import Trainer
 savepath_model_folder = os.path.join(savepath_model, f'{dataset_name}')
 os.makedirs(savepath_model_folder, exist_ok=True)
 model_path = os.path.join(savepath_model_folder, model_name)

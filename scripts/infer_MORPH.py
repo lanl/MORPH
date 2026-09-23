@@ -18,15 +18,15 @@ project_root = os.path.abspath(os.path.join(current_dir, '..'))
 sys.path.append(project_root)
 
 # load the classes
-from src.utils.device_manager import DeviceManager
-from src.utils.vit_conv_xatt_axialatt2 import ViT3DRegression
-from src.utils.metrics_3d import Metrics3DCalculator
-from src.utils.visualize_predictions_3d_full import Visualize3DPredictions
-from src.utils.visualize_rollouts_3d_full import Visualize3DRolloutPredictions
-from src.utils.data_preparation_fast import FastARDataPreparer
-from config.data_config import DataConfig
-from src.utils.dataloaders.dataloaderchaos import DataloaderChaos
-from src.utils.normalization import RevIN
+from morph_pde.utils.device_manager import DeviceManager
+from morph_pde import MORPH
+from morph_pde.utils.metrics_3d import Metrics3DCalculator
+from morph_pde.utils.visualize_predictions_3d_full import Visualize3DPredictions
+from morph_pde.utils.visualize_rollouts_3d_full import Visualize3DRolloutPredictions
+from morph_pde.utils.data_preparation_fast import FastARDataPreparer
+from morph_pde.config.data_config import DataConfig
+from morph_pde.utils.dataloaders.dataloaderchaos import DataloaderChaos
+from morph_pde.utils.normalization import RevIN
 
 # location of REVIN data
 datasets = ["DR2d_data_pdebench","MHD3d_data_thewell","1dcfd_pdebench","2dSW_pdebench",
@@ -172,7 +172,7 @@ test_loader = DataLoader(test_ds, batch_size=batch_size, shuffle=False)
 print(f'→ Length dataloader: {len(test_loader)}')
                          
 #%% ---- Model init and load weights ----
-model = ViT3DRegression(patch_size = patch_size, dim = dim, depth = depth,
+model = MORPH(patch_size = patch_size, dim = dim, depth = depth,
         heads = heads, heads_xa = args.heads_xa, mlp_dim = mlp_dim,
         max_components = max_components, conv_filter = filters, 
         max_ar = args.max_ar_order, 

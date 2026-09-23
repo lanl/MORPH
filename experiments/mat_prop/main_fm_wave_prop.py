@@ -22,7 +22,7 @@ print("Project root:", project_root)
 # built-in functions call
 from experiments.ft_llnl_jag.model_morph_ft import morph_ft
 from experiments.ft_llnl_jag.lr_schedulars import LRSched
-from src.utils.device_manager import DeviceManager
+from morph_pde.utils.device_manager import DeviceManager
 from dataloading_2_wave_prop import dataloaders
 from trainers_wave_prop import Trainer
 from model_tsh_wave_prop import TaskSpecificHead_FC

@@ -5,7 +5,7 @@ import numpy as np
 from torch.utils.data import Dataset, DataLoader
 from huggingface_hub import hf_hub_download
 import pandas as pd
-from src.utils.importdataset import ImportImgData
+from morph_pde.utils.importdataset import ImportImgData
 import matplotlib.pyplot as plt
 
 # dataset class

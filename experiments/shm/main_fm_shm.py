@@ -25,7 +25,7 @@ print("Project root:", project_root)
 from experiments.shm.dataloading_shm import Dataloading
 from experiments.ft_llnl_jag.model_morph_ft import morph_ft
 from experiments.ft_llnl_jag.lr_schedulars import LRSched
-from src.utils.device_manager import DeviceManager
+from morph_pde.utils.device_manager import DeviceManager
 from experiments.shm.model_tsh_shm import TaskSpecificHead_FC
 from experiments.shm.trainers_shm import Trainer
 from experiments.shm.metrics import Metrics

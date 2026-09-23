@@ -1,16 +1,14 @@
 import os
 import numpy as np
 import h5py
-import sys
 
 # Add project root to path
 current_dir  = os.path.dirname(os.path.abspath(__file__))
 project_root = os.path.abspath(os.path.join(current_dir, '..'))
-sys.path.append(project_root)
 
 # load the classes
-from src.utils.normalization import RevIN
-from config.data_config_vis import DataConfig
+from morph_pde.utils.normalization import RevIN
+from morph_pde.config.data_config_vis import DataConfig
 
 # raw data directory
 dataset_dir = "D:/data"
@@ -118,7 +116,7 @@ for base in (savepath_norm_data_dr2d, savepath_norm_data_mhd3d, savepath_norm_da
 
 #%% --->> PRETRAINING DATASETS
 #%% MHD3D data
-from src.utils.dataloaders.dataloader_mhd import MHDDataLoader
+from morph_pde.utils.dataloaders.dataloader_mhd import MHDDataLoader
 
 dataset_mhd = MHDDataLoader(loadpath_mhd3d)
 train_data, val_data = dataset_mhd.split_train()
@@ -211,7 +209,7 @@ for split, norm_data, files, chunks in [
 print("Normalized MHD data saved under:", savepath_norm_data_mhd3d)
 
 #%% DR2D data
-from src.utils.dataloaders.dataloader_dr import split_and_save_h5, DR2DDataLoader
+from morph_pde.utils.dataloaders.dataloader_dr import split_and_save_h5, DR2DDataLoader
 
 # first split the raw DR data into train/test/val. raw_h5_loadpath and data_path are the load path and save path
 split_and_save_h5(raw_h5_loadpath = loadpath_dr2d, 
@@ -272,7 +270,7 @@ split_and_save_h5(savepath_norm_data_dr2d, savepath_norm_data_dr2d,
                   rand = False)
 
 #%% CFD1D data
-from src.utils.dataloaders.dataloader_cfd1d import CFD1dDataLoader, split_and_save_h5
+from morph_pde.utils.dataloaders.dataloader_cfd1d import CFD1dDataLoader, split_and_save_h5
 
 # first split the raw DR data into train/test/val. raw_h5_loadpath and data_path are the load path and save path
 split_and_save_h5(loadpath_cfd1d, loadpath_cfd1d, train_frac = 0.8, rand = True)
@@ -349,7 +347,7 @@ split_and_save_h5(savepath_norm_data_cfd1d, savepath_norm_data_cfd1d,
 '''
 data loading and processing similar to DR dataset.
 '''
-from src.utils.dataloaders.dataloader_sw2d import split_and_save_h5, SW2dDataLoader
+from morph_pde.utils.dataloaders.dataloader_sw2d import split_and_save_h5, SW2dDataLoader
 
 # first split the raw DR data into train/test/val. raw_h5_loadpath and data_path are the load path and save path
 split_and_save_h5(raw_h5_loadpath = loadpath_sw2d, 
@@ -408,7 +406,7 @@ split_and_save_h5(savepath_norm_data_sw2d, savepath_norm_data_sw2d,
 
 #%% CFD2d (IC)
 ####################### Load and process CFD2d-IC data ##############################
-from src.utils.dataloaders.dataloader_cfd2dic import split_and_save_h5, CFD2dicDataLoader
+from morph_pde.utils.dataloaders.dataloader_cfd2dic import split_and_save_h5, CFD2dicDataLoader
 
 # first split the raw DR data into train/test/val. raw_h5_loadpath and data_path are the load path and save path
 split_and_save_h5(raw_dir = loadpath_cfd2dic, 
@@ -485,7 +483,7 @@ split_and_save_h5(savepath_norm_data_cfd2dic, savepath_norm_data_cfd2dic,
                   rand = False)
 
 #%% CFD3D
-from src.utils.dataloaders.dataloader_cfd3d import CFD3dDataLoader, split_and_save_h5
+from morph_pde.utils.dataloaders.dataloader_cfd3d import CFD3dDataLoader, split_and_save_h5
 
 # first split the raw DR data into train/test/val. raw_h5_loadpath and data_path are the load path and save path
 split_and_save_h5(raw_dir = loadpath_cfd3d, 
@@ -565,7 +563,7 @@ split_and_save_h5(savepath_norm_data_cfd3d, savepath_norm_data_cfd3d,
 
 #%% --->> FINETUNING DATASETS
 #%% DR1d
-from src.utils.dataloaders.dataloader_dr1d import split_and_save_h5, DR1DDataLoader
+from morph_pde.utils.dataloaders.dataloader_dr1d import split_and_save_h5, DR1DDataLoader
 
 # first split the raw DR data into train/test/val. raw_h5_loadpath and data_path are the load path and save path
 split_and_save_h5(raw_h5_loadpath = loadpath_dr1d, 
@@ -627,7 +625,7 @@ split_and_save_h5(savepath_norm_data_dr1d, savepath_norm_data_dr1d,
 
 #%% CFD2D
 ####################### Load and process CFD2D data ##############################
-from src.utils.dataloaders.dataloader_cfd2d import CFD2DDataLoader, split_and_save_h5
+from morph_pde.utils.dataloaders.dataloader_cfd2d import CFD2DDataLoader, split_and_save_h5
 
 # first split the raw DR data into train/test/val. raw_h5_loadpath and data_path are the load path and save path
 split_and_save_h5(raw_dir = loadpath_cfd2d, 
@@ -700,7 +698,7 @@ split_and_save_h5(savepath_norm_data_cfd2d, savepath_norm_data_cfd2d,
                   rand = False)
 
 #%% CFD3D-Turb
-from src.utils.dataloaders.dataloader_cfd3d_turb import CFD3dTurbDataLoader, split_and_save_h5
+from morph_pde.utils.dataloaders.dataloader_cfd3d_turb import CFD3dTurbDataLoader, split_and_save_h5
 
 # first split the raw DR data into train/test/val. raw_h5_loadpath and data_path are the load path and save path
 split_and_save_h5(raw_dir = loadpath_cfd3d_turb, 
@@ -780,7 +778,7 @@ split_and_save_h5(savepath_norm_data_cfd3d_turb, savepath_norm_data_cfd3d_turb,
                   rand = False)
 
 #%% BE1D
-from src.utils.dataloaders.dataloader_be1d import split_and_save_h5, BE1DDataLoader
+from morph_pde.utils.dataloaders.dataloader_be1d import split_and_save_h5, BE1DDataLoader
 
 # first split the raw DR data into train/test/val. 
 # raw_h5_loadpath and data_path are the load path and save path
@@ -842,7 +840,7 @@ split_and_save_h5(savepath_norm_data_be1d, savepath_norm_data_be1d,
                   rand = False)
 
 #%% GSDR-2D
-from src.utils.dataloaders.dataloader_gsdr2d import GSDR2dDataLoader
+from morph_pde.utils.dataloaders.dataloader_gsdr2d import GSDR2dDataLoader
 
 dataset_gsdr = GSDR2dDataLoader(loadpath_gsdr2d)
 train_data, val_data = dataset_gsdr.split_train()
@@ -927,7 +925,7 @@ for split, norm_data, files, chunks in [
 print("Normalized GSDR data saved under:", savepath_norm_data_gsdr2d)
 
 #%% TGC3d
-from src.utils.dataloaders.dataloader_tgc3d import TGC3dDataLoader
+from morph_pde.utils.dataloaders.dataloader_tgc3d import TGC3dDataLoader
 
 dataset_tgc3d = TGC3dDataLoader(loadpath_tgc3d)
 train_data, val_data = dataset_tgc3d.split_train()
@@ -1023,7 +1021,7 @@ for split, norm_data, files, chunks in [
 print("Normalized tgc3d data saved under:", savepath_norm_data_tgc3d)
 
 #%% FNS-KF (PDEGym)
-from src.utils.dataloaders.dataloader_fns_kf_2d import split_and_save_h5, FNSKF2dDataLoader
+from morph_pde.utils.dataloaders.dataloader_fns_kf_2d import split_and_save_h5, FNSKF2dDataLoader
 
 # first split the raw DR data into train/test/val. raw_h5_loadpath and data_path are the load path and save path
 split_and_save_h5(raw_h5_loadpath = loadpath_fns_kf_2d, 
@@ -1083,7 +1081,7 @@ split_and_save_h5(savepath_norm_data_fns_kf_2d, savepath_norm_data_fns_kf_2d,
                   rand = False)
 
 #%% CE-CRP, KH, RP, Gauss (PDEGym)
-from src.utils.dataloaders.dataloader_ce_2d import split_and_save_h5, CE2dDataLoader
+from morph_pde.utils.dataloaders.dataloader_ce_2d import split_and_save_h5, CE2dDataLoader
 
 # collect all loadpaths and savepaths for CE
 loadpaths_ce = [loadpath_ce_crp_2d, loadpath_ce_kh_2d, loadpath_ce_rp_2d, 
@@ -1173,7 +1171,7 @@ split_and_save_h5(savepath_ce, savepath_ce,
                   rand = False)
 
 #%% NS-Sines,Gauss (PDEGym)
-from src.utils.dataloaders.dataloader_ns_2d import split_and_save_h5, NS2dDataLoader
+from morph_pde.utils.dataloaders.dataloader_ns_2d import split_and_save_h5, NS2dDataLoader
 
 # collect all loadpaths and savepaths for CE
 loadpaths_ns = [loadpath_ns_sines_2d,  loadpath_ns_gauss_2d]

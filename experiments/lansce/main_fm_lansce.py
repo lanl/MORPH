@@ -25,7 +25,7 @@ print("Project root:", project_root)
 from experiments.ft_llnl_jag.model_morph_ft import morph_ft
 from experiments.lansce.dataloading_lansce import Dataloading
 from experiments.ft_llnl_jag.lr_schedulars import LRSched
-from src.utils.device_manager import DeviceManager
+from morph_pde.utils.device_manager import DeviceManager
 from experiments.lansce.trainer_lansce import Trainer
 from experiments.lansce.post_training_viz_lansce import (
     learning_curves, plot_rollout)

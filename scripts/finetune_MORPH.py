@@ -1,5 +1,4 @@
 import os
-import sys
 import argparse
 import torch
 import torch.nn as nn
@@ -9,6 +8,7 @@ import matplotlib.pyplot as plt
 from torch.utils.data import Dataset, DataLoader
 import numpy as np
 from tqdm import tqdm
+import time
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 os.environ["MPLBACKEND"] = "Agg"      # safest: force non-GUI backend
 matplotlib.use("Agg")                 # belt-and-suspenders
@@ -16,19 +16,19 @@ matplotlib.use("Agg")                 # belt-and-suspenders
 # Add project root to Python path
 current_dir = os.path.dirname(os.path.abspath(__file__))
 project_root = os.path.abspath(os.path.join(current_dir, '..'))
-sys.path.append(project_root)
 
 # load the classes
-from src.utils.device_manager import DeviceManager
-from src.utils.vit_conv_xatt_axialatt2 import ViT3DRegression
-from src.utils.metrics_3d import Metrics3DCalculator
-from src.utils.visualize_predictions_3d_full import Visualize3DPredictions
-from src.utils.visualize_rollouts_3d_full import Visualize3DRolloutPredictions
-from src.utils.data_preparation_fast import FastARDataPreparer
-from config.data_config import DataConfig
-from src.utils.dataloaders.dataloaderchaos import DataloaderChaos
-from src.utils.normalization import RevIN
-
+from morph_pde.utils.device_manager import DeviceManager
+from morph_pde import MORPH
+from morph_pde.utils.metrics_3d import Metrics3DCalculator
+from morph_pde.utils.visualize_predictions_3d_full import Visualize3DPredictions
+from morph_pde.utils.visualize_rollouts_3d_full import Visualize3DRolloutPredictions
+from morph_pde.utils.data_preparation_fast import FastARDataPreparer
+from morph_pde.config.data_config import DataConfig
+from morph_pde.utils.dataloaders.dataloaderchaos import DataloaderChaos
+from morph_pde.utils.normalization import RevIN
+from morph_pde.utils.select_fine_tuning_parameters import SelectFineTuningParameters
+from morph_pde.utils.trainers import Trainer
 #%% Argument parser
 MORPH_MODELS = {
     'Ti': [8, 256,  4,  4, 1024],
@@ -223,7 +223,7 @@ max_components = 3
 model_name = (f'ft_morph-{args.model_size}-{ft_dataset}-max_ar{args.max_ar_order}_'
 f'rank-lora{args.rank_lora_attn}_ftlevel{lev}_lr{args.lr_level4}_wd{args.wd_level4}')
 
-ft_model = ViT3DRegression(
+ft_model = MORPH(
     patch_size=patch_size, dim=dim, depth=depth,
     heads=heads, heads_xa=args.heads_xa, mlp_dim=mlp_dim,
     max_components=max_components, conv_filter=filters,
@@ -275,7 +275,6 @@ ft_te_loader = DataLoader(ft_te, batch_size=batch_size, shuffle=False)
 print(f'→ Length dataloader: Tr {len(ft_tr_loader)}, Val {len(ft_va_loader)}')
     
 #%% Fine-tuning setup
-from src.utils.select_fine_tuning_parameters import SelectFineTuningParameters
 selector = SelectFineTuningParameters(ft_model, args)
 optimizer = selector.configure_levels()
 ft_model.train().to(device)
@@ -340,8 +339,6 @@ else:
     print('No model is loaded')
     
 #%% Fine tuning 
-import time
-from src.utils.trainers import Trainer
 savepath_model_folder = os.path.join(savepath_model, f'{ft_dataset}')
 os.makedirs(savepath_model_folder, exist_ok=True)
 model_path = os.path.join(savepath_model_folder, model_name)
