@@ -22,6 +22,7 @@ dependencies = [
     "matplotlib",
     "tqdm",
     "netCDF4",
+    "PyYAML",
 ]
 
 

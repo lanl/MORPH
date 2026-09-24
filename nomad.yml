@@ -1,5 +1,5 @@
 fmod_models:
   - model_class: morph_pde.nomad_tool.MORPHTool
-    name_or_path: models/morph-ti-fm
-    tool_name: morph-ti
+    name_or_path: models/morph-s-pli
+    tool_name: morph-s-pli
     batch_size: 1
