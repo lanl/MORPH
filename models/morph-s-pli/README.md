@@ -104,6 +104,7 @@ Start NOMAD from the MORPH repository:
 
 ```bash
 nomad serve --transport http --port 8181 nomad.yml
+```
 
 ## Papers and Scientific Outputs
 
