@@ -1,0 +1,39 @@
+model:
+  patch_size: 8
+  dim: 512
+  depth: 4
+  heads: 8
+  heads_xa: 32
+  mlp_dim: 2048
+  max_components: 3
+  conv_filter: 8
+  max_ar: 1
+  max_patches: 4096
+  max_fields: 3
+  dropout: 0.1
+  emb_dropout: 0.1
+  lora_r_attn: 0
+  lora_r_mlp: 0
+  lora_alpha: null
+  lora_p: 0.0
+  model_size: S
+  activated_ar1k: false
+
+checkpoint:
+  file: model.pth
+  state_dict_key: model_state_dict
+
+normalization:
+  file: normalization.npy
+  type: affine
+  statistics:
+    - mean
+    - variance
+  formula: "(x - mean) / variance"
+
+task:
+  name: pli_final_frame_prediction
+  type: terminal_frame_prediction
+  input_field: av_density
+  input_frame: 0
+  target_frame: 99

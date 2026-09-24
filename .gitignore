@@ -1,6 +1,5 @@
 # --- Ignore top-level repository folders ---
 
-/models/
 /datasets/
 /data/
 /comparisons/
@@ -18,6 +17,12 @@
 /experiments/**/senseiver/
 
 /experiments/ft_llnl_jag/icf-jag-10k/
+
+/models/*
+!/models/morph-s-pli/
+!/models/morph-s-pli/config.yaml
+!/models/morph-s-pli/normalization.npy
+!/models/morph-s-pli/model.pth
 
 # --- Python cache ---
 
