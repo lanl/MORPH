@@ -88,249 +88,217 @@ python -c "from morph_pde import MORPH; print(MORPH)"
 
 ## NOMAD / MCP Integration
 
-MORPH can be exposed as a Model Context Protocol (MCP) tool using [LANL NOMAD](https://github.com/lanl/nomad). This allows MCP-compatible clients and AI agents to call MORPH through a standard tool interface.
+MORPH can be exposed as a Model Context Protocol (MCP) tool using [LANL NOMAD](https://github.com/lanl/nomad). The `morph-nomad-pli_t0_t99` branch demonstrates a real-data integration using a fine-tuned MORPH-S model for PLI terminal-frame prediction.
 
-The current integration exposes the MORPH-Ti foundation model through:
+The demonstrated workflow is:
 
 ```text
-MCP client / AI agent
+PLI t=0 physical field
         |
         v
-      NOMAD
+checkpoint-specific normalization
         |
         v
-     morph_ti
+MORPH-S
         |
         v
-    MORPHTool
+denormalization
         |
         v
-     MORPH-Ti
+PLI t=99 prediction
+        |
+        v
+NOMAD / MCP
 ```
 
 ### Current scope
 
-The current NOMAD adapter is a proof-of-concept integration for the MORPH-Ti flow-matching checkpoint. The MORPH-Ti architecture parameters are currently defined in `src/morph_pde/nomad_tool.py`, and the checkpoint is loaded from a local model directory.
+The current integration uses a MORPH-S checkpoint fine-tuned to predict the final PLI frame (`t=99`) from the initial frame (`t=0`).
 
-The MCP tool accepts a MORPH state tensor with shape:
+The MCP tool accepts an unnormalized MORPH state tensor in physical units with shape:
 
 ```text
 (T, F, C, D, H, W)
 ```
 
-and returns the predicted next state with shape:
+and returns the prediction in physical units with shape:
 
 ```text
 (F, C, D, H, W)
 ```
 
-### 1. Create a Python 3.12 environment
+Normalization is performed internally by MORPH. The normalization statistics associated with the fine-tuned checkpoint are loaded from `normalization.npy`, and the model architecture is loaded from `config.yaml`.
 
-For example, with Conda:
+For the current PLI checkpoint, the stored normalization statistics are the training/validation mean and variance, and the transformation is:
 
-```bash
-conda create -n morph_nomad python=3.12 -y
-conda activate morph_nomad
+```text
+x_normalized = (x - mean) / variance
 ```
 
-Install a PyTorch build appropriate for your system, then install MORPH and NOMAD:
+The predicted field is transformed back to physical units before being returned through MCP.
+
+### Install this branch
 
 ```bash
+python -m pip install "git+https://github.com/lanl/MORPH.git@morph-nomad-pli_t0_t99"
+```
+
+For development:
+
+```bash
+git clone -b morph-nomad-pli_t0_t99 https://github.com/lanl/MORPH.git
+cd MORPH
 python -m pip install -e .
 python -m pip install nomad-scifm
 ```
 
-Verify the environment:
+The NOMAD/MCP integration requires Python 3.12+.
 
-```bash
-python --version
-python -c "import torch; print('PyTorch:', torch.__version__); print('CUDA available:', torch.cuda.is_available())"
-python -c "from morph_pde.nomad_tool import MORPHTool; print(MORPHTool)"
-python -c "import nomad; print(nomad.__file__)"
-```
+### Prepare the PLI model artifact
 
-NOMAD requires Python 3.12 or newer.
-
-### 2. Prepare the MORPH-Ti checkpoint
-
-Download the MORPH-Ti flow-matching checkpoint from the [MORPH Hugging Face repository](https://huggingface.co/mahindrautela/MORPH):
-
-```text
-morph-Ti-FM-max_ar1_ep225.pth
-```
-
-The current `nomad.yml` expects the checkpoint at:
+Create:
 
 ```text
 models/
-└── morph-ti-fm/
-    └── model.pth
+└── morph-s-pli/
+    ├── model.pth
+    ├── normalization.npy
+    └── config.yaml
 ```
 
-If the checkpoint is already available under `models/FM/`, create the directory and copy it.
+`model.pth` is the fine-tuned MORPH-S checkpoint.
+
+`normalization.npy` contains the normalization statistics associated with that checkpoint.
+
+A reference model configuration is provided in:
+
+```text
+configs/morph-s-pli.yaml
+```
+
+Copy it into the model directory:
 
 Linux/macOS:
 
 ```bash
-mkdir -p models/morph-ti-fm
-cp models/FM/morph-Ti-FM-max_ar1_ep225.pth models/morph-ti-fm/model.pth
+mkdir -p models/morph-s-pli
+cp configs/morph-s-pli.yaml models/morph-s-pli/config.yaml
 ```
 
 Windows Command Prompt:
 
 ```bat
-mkdir models\morph-ti-fm
-copy models\FM\morph-Ti-FM-max_ar1_ep225.pth models\morph-ti-fm\model.pth
+mkdir models\morph-s-pli
+copy configs\morph-s-pli.yaml models\morph-s-pli\config.yaml
 ```
 
-The checkpoint should remain outside Git; do not commit `model.pth`.
+The checkpoint and dataset files should remain outside Git.
 
-### 3. NOMAD configuration
+### NOMAD configuration
 
-The repository includes [`nomad.yml`](./nomad.yml):
+The branch uses:
 
 ```yaml
 fmod_models:
   - model_class: morph_pde.nomad_tool.MORPHTool
-    name_or_path: models/morph-ti-fm
-    tool_name: morph-ti
+    name_or_path: models/morph-s-pli
+    tool_name: morph-s-pli
     batch_size: 1
 ```
 
-NOMAD exposes this model through MCP as the tool:
+NOMAD exposes the model through MCP as:
 
 ```text
-morph_ti
+morph_s_pli
 ```
 
-### 4. Start the NOMAD MCP server
+### Start the NOMAD MCP server
 
-From the MORPH repository root, start the server in the first terminal:
+From the repository root:
 
 ```bash
-nomad serve --transport http --host localhost --port 8000 nomad.yml
-```
-
-A successful startup should contain messages similar to:
-
-```text
-Registering torch model 'morph-ti'
-Starting MCP server 'nomad' ... on http://localhost:8000/mcp
-Application startup complete.
+nomad serve --transport http --port 8181 nomad.yml
 ```
 
 The MCP endpoint is:
 
 ```text
-http://localhost:8000/mcp
+http://localhost:8181/mcp
 ```
 
-Leave this terminal running while testing the MCP client.
-
-If a CUDA device is available, NOMAD can move the model to the GPU when an inference request is received. The server log will show the device used, for example:
+A successful startup should include messages similar to:
 
 ```text
-Loading tool 'morph_ti' onto cuda:0
+Registering torch model 'morph-s-pli'
+Offloaded tool 'morph_s_pli' to CPU
+Starting MCP server 'nomad' ... http://localhost:8181/mcp
+Application startup complete.
 ```
 
-### 5. Verify MCP tool discovery
-
-This step is optional but useful for checking the MCP interface.
-
-Install Node.js if it is not already available, then run in a second terminal:
-
-```bash
-npx @modelcontextprotocol/inspector --cli http://localhost:8000/mcp --transport http --method tools/list
-```
-
-The returned tool list should include:
+When an inference request arrives, NOMAD can dynamically move the model to an available GPU:
 
 ```text
-get_model_card
-morph_ti
+Loading tool 'morph_s_pli' onto cuda:0
 ```
 
-Node.js is only required for the MCP Inspector check; it is not required for normal MORPH inference.
+### Real-data PLI integration test
 
-### 6. Run the end-to-end MCP test
-
-With the NOMAD server still running in the first terminal, run:
+Place the PLI input HDF5 file under the ignored `datasets/` directory and run:
 
 ```bash
-python tests/test_mcp.py
+python tests/test_mcp_pli.py \
+    --input-h5 datasets/average_jet_first_frame_full_res.h5
 ```
 
-The test:
-
-1. creates one input tensor,
-2. runs MORPH directly,
-3. sends the same tensor through MCP,
-4. receives the NOMAD/MORPH prediction, and
-5. compares the direct and MCP outputs.
-
-A successful run should look similar to:
+The test reads:
 
 ```text
-Input shape: (1, 1, 1, 1, 64, 64)
-Direct output shape: (1, 1, 1, 64, 64)
-Available tools: ['get_model_card', 'morph_ti']
-MCP error: False
-MCP output shape: (1, 1, 1, 64, 64)
-Max abs diff: 0.0
-Mean abs diff: 0.0
-Match: True
+t0_fields/av_density
 ```
 
-The current integration test performs the direct comparison on `cuda:0`, so a CUDA-capable GPU is required to reproduce the exact test as currently written.
-
-### NOMAD/MCP troubleshooting
-
-**`ModuleNotFoundError: No module named 'morph_pde.nomad_tool'`**
-
-Make sure you are on the integration branch and installed the repository in editable mode:
-
-```bash
-git switch morph-nomad-integration
-python -m pip install -e .
-```
-
-Confirm that Python is using the current checkout:
-
-```bash
-python -c "import morph_pde; print(morph_pde.__file__)"
-```
-
-**`ModuleNotFoundError: No module named 'nomad'`**
-
-Install the NOMAD package:
-
-```bash
-python -m pip install nomad-scifm
-```
-
-**`FileNotFoundError` for `model.pth`**
-
-Confirm that this file exists:
+from the HDF5 file and performs three equivalent inference paths:
 
 ```text
-models/morph-ti-fm/model.pth
+1. manual normalization -> MORPH-S -> manual denormalization
+2. normalization-aware MORPH wrapper
+3. MCP -> NOMAD -> normalization-aware MORPH wrapper
 ```
+
+The reference and MCP predictions are then compared numerically.
+
+The validated PLI integration produced:
+
+```text
+Physical input shape: (1, 1, 1, 1, 1120, 400)
+
+Reference vs wrapper max abs diff: 0.0
+Reference vs wrapper match: True
+
+Available tools: ['get_model_card', 'morph_s_pli']
+
+Reference output shape: (1, 1, 1, 1120, 400)
+MCP output shape: (1, 1, 1, 1120, 400)
+
+Reference vs MCP max abs diff: 0.0
+Reference vs MCP mean abs diff: 0.0
+Reference vs MCP match: True
+```
+
+This verifies that checkpoint-specific normalization, MORPH inference, NOMAD device management, MCP transport, and denormalization reproduce the direct MORPH prediction exactly for the tested sample.
 
 ### Current integration limitations
 
-The current MCP integration is intentionally minimal:
+The current integration is intentionally focused on validating one real scientific inference workflow.
 
-- it currently targets the MORPH-Ti checkpoint;
-- MORPH-Ti architecture parameters are currently specified in `nomad_tool.py`;
-- the checkpoint is currently expected from local storage; and
-- `tests/test_mcp.py` currently uses a synthetic tensor for the end-to-end equivalence test.
+* The demonstrated model is a fine-tuned MORPH-S checkpoint for PLI `t=0 -> t=99` terminal-frame prediction.
+* `model.pth` and `normalization.npy` are currently expected from local storage and are not automatically downloaded.
+* The MCP interface currently receives an already prepared MORPH tensor; HDF5 parsing is performed by the test/client rather than by the MCP tool.
+* The current PLI normalization format is checkpoint-specific and stores `[mean, variance]`.
+* Autoregressive multi-step rollout through NOMAD/MCP has not yet been implemented.
+* Additional MORPH model sizes and downstream datasets have not yet been validated through this adapter.
 
-Future integration work can move the model configuration into a model artifact such as 
-- `config.json`, 
-- add a complete model card, 
-- host the NOMAD-ready artifact on Hugging Face, 
-- validate a real PDE sample, and 
-- use the same adapter for additional MORPH model sizes.
+The next integration step is to apply the same model-bundle abstraction—checkpoint, model configuration, and normalization statistics—to MORPH autoregressive rollout tasks.
+
 
 ---
 
