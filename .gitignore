@@ -1,6 +1,5 @@
 # --- Ignore top-level repository folders ---
 
-/datasets/
 /data/
 /comparisons/
 /wandb/
@@ -23,6 +22,9 @@
 !/models/morph-s-pli/config.yaml
 !/models/morph-s-pli/normalization.npy
 !/models/morph-s-pli/model.pth
+
+/datasets/*
+!/datasets/average_jet_first_frame_full_res.h5
 
 # --- Python cache ---
 
